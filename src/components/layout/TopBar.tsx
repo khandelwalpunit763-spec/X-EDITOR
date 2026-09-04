@@ -1,0 +1,163 @@
+import { useState } from 'react';
+import { useStore } from '../../store/useStore';
+import {
+  Plus, FolderOpen, Save, Undo2, Redo2, Upload, Download, Share2,
+  Settings, HelpCircle, Zap, ChevronDown, Monitor,
+  Grid3X3, Ruler, Magnet, Smartphone, Tablet, MonitorCheck
+} from 'lucide-react';
+
+export default function TopBar() {
+  const { 
+    project, undo, redo, setShowNewProjectModal, setShowExportModal,
+    setShowImportModal, setShowSettingsModal,
+    setShowShortcutsModal, showGrid, setShowGrid,
+    showGuides, setShowGuides, showSafeZones, setShowSafeZones,
+    snapToObjects, setSnapToObjects, setZoom
+  } = useStore();
+
+  const [showFileMenu, setShowFileMenu] = useState(false);
+  const [showViewMenu, setShowViewMenu] = useState(false);
+
+  const menuItems = [
+    { label: 'New Project', icon: <Plus size={14} />, action: () => setShowNewProjectModal(true), shortcut: '' },
+    { label: 'Open Project', icon: <FolderOpen size={14} />, action: () => {}, shortcut: 'Ctrl+O' },
+    { label: 'Save Project', icon: <Save size={14} />, action: () => useStore.getState().saveProject(), shortcut: 'Ctrl+S' },
+    { divider: true },
+    { label: 'Import Media', icon: <Upload size={14} />, action: () => setShowImportModal(true), shortcut: '' },
+    { label: 'Export', icon: <Download size={14} />, action: () => setShowExportModal(true), shortcut: 'Ctrl+E' },
+    { divider: true },
+    { label: 'Settings', icon: <Settings size={14} />, action: () => setShowSettingsModal(true), shortcut: '' },
+  ];
+
+  const viewItems = [
+    { label: 'Grid', icon: <Grid3X3 size={14} />, action: () => setShowGrid(!showGrid), active: showGrid },
+    { label: 'Guides', icon: <Ruler size={14} />, action: () => setShowGuides(!showGuides), active: showGuides },
+    { label: 'Safe Zones', icon: <Monitor size={14} />, action: () => setShowSafeZones(!showSafeZones), active: showSafeZones },
+    { label: 'Snap to Objects', icon: <Magnet size={14} />, action: () => setSnapToObjects(!snapToObjects), active: snapToObjects },
+    { divider: true },
+    { label: 'Zoom to Fit', icon: null, action: () => setZoom(100), shortcut: '' },
+  ];
+
+  return (
+    <div className="h-11 flex items-center justify-between px-3 border-b flex-shrink-0 no-select" 
+      style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border)' }}>
+      {/* Left: Logo & Menus */}
+      <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2 mr-3 px-2">
+          <div className="w-6 h-6 rounded flex items-center justify-center" 
+            style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)' }}>
+            <Zap size={14} className="text-white" />
+          </div>
+          <span className="text-sm font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+            X-EDITOR
+          </span>
+        </div>
+
+        {/* File Menu */}
+        <div className="relative">
+          <button 
+            className="flex items-center gap-1 px-2 py-1 rounded text-xs text-gray-400 hover:text-white hover:bg-[var(--bg-hover)] transition-all"
+            onClick={() => { setShowFileMenu(!showFileMenu); setShowViewMenu(false); }}
+          >
+            File <ChevronDown size={12} />
+          </button>
+          {showFileMenu && (
+            <div className="context-menu top-full left-0 mt-1 animate-fade-in" onClick={() => setShowFileMenu(false)}>
+              {menuItems.map((item, i) => 
+                item.divider ? <div key={i} className="context-menu-divider" /> : (
+                  <button key={i} className="context-menu-item w-full" onClick={item.action}>
+                    {item.icon}
+                    <span className="flex-1 text-left">{item.label}</span>
+                    {item.shortcut && <span className="text-xs text-gray-600">{item.shortcut}</span>}
+                  </button>
+                )
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Edit */}
+        <button className="flex items-center gap-1 px-2 py-1 rounded text-xs text-gray-400 hover:text-white hover:bg-[var(--bg-hover)] transition-all">
+          Edit
+        </button>
+
+        {/* View Menu */}
+        <div className="relative">
+          <button 
+            className="flex items-center gap-1 px-2 py-1 rounded text-xs text-gray-400 hover:text-white hover:bg-[var(--bg-hover)] transition-all"
+            onClick={() => { setShowViewMenu(!showViewMenu); setShowFileMenu(false); }}
+          >
+            View <ChevronDown size={12} />
+          </button>
+          {showViewMenu && (
+            <div className="context-menu top-full left-0 mt-1 animate-fade-in" onClick={() => setShowViewMenu(false)}>
+              {viewItems.map((item, i) => 
+                item.divider ? <div key={i} className="context-menu-divider" /> : (
+                  <button key={i} className="context-menu-item w-full" onClick={item.action}>
+                    {item.icon}
+                    <span className="flex-1 text-left">{item.label}</span>
+                    {item.active !== undefined && (
+                      <div className={`w-3 h-3 rounded border ${item.active ? 'bg-indigo-500 border-indigo-500' : 'border-gray-600'}`} />
+                    )}
+                  </button>
+                )
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Center: Project Name & Quick Actions */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-gray-500">{project?.name || 'Untitled Project'}</span>
+        <div className="flex items-center gap-1 ml-2">
+          <button className="tool-btn w-7 h-7" onClick={undo} title="Undo (Ctrl+Z)">
+            <Undo2 size={14} />
+          </button>
+          <button className="tool-btn w-7 h-7" onClick={redo} title="Redo (Ctrl+Shift+Z)">
+            <Redo2 size={14} />
+          </button>
+        </div>
+      </div>
+
+      {/* Right: Actions */}
+      <div className="flex items-center gap-1">
+        {/* Resolution indicator */}
+        <div className="flex items-center gap-1 px-2 py-1 rounded text-xs text-gray-500 mr-2"
+          style={{ background: 'var(--bg-tertiary)' }}>
+          <Monitor size={12} />
+          <span>{project?.width || 1920}×{project?.height || 1080}</span>
+        </div>
+
+        {/* Device preview */}
+        <div className="flex items-center gap-0.5 mr-2" style={{ background: 'var(--bg-tertiary)', borderRadius: 6, padding: 2 }}>
+          <button className="tool-btn w-6 h-6" title="Desktop">
+            <MonitorCheck size={13} />
+          </button>
+          <button className="tool-btn w-6 h-6" title="Tablet">
+            <Tablet size={13} />
+          </button>
+          <button className="tool-btn w-6 h-6" title="Mobile">
+            <Smartphone size={13} />
+          </button>
+        </div>
+
+        <button className="btn btn-ghost text-xs h-7 px-2" onClick={() => setShowShortcutsModal(true)}>
+          <HelpCircle size={14} />
+        </button>
+        <button className="btn btn-ghost text-xs h-7 px-2" onClick={() => setShowSettingsModal(true)}>
+          <Settings size={14} />
+        </button>
+        <button className="btn btn-ghost text-xs h-7 px-2" onClick={() => setShowExportModal(true)}>
+          <Share2 size={14} />
+        </button>
+        <button className="btn btn-primary text-xs h-7 px-3" onClick={() => setShowExportModal(true)}>
+          <Download size={14} /> Export
+        </button>
+        <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-semibold ml-1 cursor-pointer">
+          U
+        </div>
+      </div>
+    </div>
+  );
+}
