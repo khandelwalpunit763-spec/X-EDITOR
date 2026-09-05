@@ -14,6 +14,7 @@ interface HistoryEntry {
 interface AppState {
   // App state
   view: AppView;
+  viewHistory: AppView[];
   editorMode: EditorMode;
   isLoading: boolean;
   showNewProjectModal: boolean;
@@ -25,6 +26,7 @@ interface AppState {
   showWatermarkModal: boolean;
   showAIModal: boolean;
   showThumbnailModal: boolean;
+  showShareModal: boolean;
 
   // Project
   project: Project | null;
@@ -60,6 +62,7 @@ interface AppState {
 
   // Actions
   setView: (view: AppView) => void;
+  goBack: () => void;
   setEditorMode: (mode: EditorMode) => void;
   setLoading: (loading: boolean) => void;
   setActiveTool: (tool: Tool) => void;
@@ -127,6 +130,7 @@ interface AppState {
   setShowWatermarkModal: (show: boolean) => void;
   setShowAIModal: (show: boolean) => void;
   setShowThumbnailModal: (show: boolean) => void;
+  setShowShareModal: (show: boolean) => void;
 
   // History actions
   pushHistory: () => void;
@@ -148,6 +152,7 @@ const createDefaultTracks = (): Track[] => [
 
 export const useStore = create<AppState>((set, get) => ({
   view: 'landing',
+  viewHistory: [],
   editorMode: 'video',
   isLoading: false,
   showNewProjectModal: false,
@@ -159,6 +164,7 @@ export const useStore = create<AppState>((set, get) => ({
   showWatermarkModal: false,
   showAIModal: false,
   showThumbnailModal: false,
+  showShareModal: false,
 
   project: null,
   recentProjects: [],
@@ -185,7 +191,15 @@ export const useStore = create<AppState>((set, get) => ({
   history: [{ layers: [], tracks: createDefaultTracks() }],
   historyIndex: 0,
 
-  setView: (view) => set({ view }),
+  setView: (view) => set((s) => {
+    if (s.view === view) return {}
+    return { view, viewHistory: [...s.viewHistory, s.view].slice(-20) }
+  }),
+  goBack: () => set((s) => {
+    if (s.viewHistory.length === 0) return { view: 'landing' as AppView }
+    const prev = s.viewHistory[s.viewHistory.length - 1]
+    return { view: prev, viewHistory: s.viewHistory.slice(0, -1) }
+  }),
   setEditorMode: (mode) => set({ editorMode: mode }),
   setLoading: (loading) => set({ isLoading: loading }),
   setActiveTool: (tool) => set({ activeTool: tool }),
@@ -506,6 +520,7 @@ export const useStore = create<AppState>((set, get) => ({
   setShowWatermarkModal: (show) => set({ showWatermarkModal: show }),
   setShowAIModal: (show) => set({ showAIModal: show }),
   setShowThumbnailModal: (show) => set({ showThumbnailModal: show }),
+  setShowShareModal: (show) => set({ showShareModal: show }),
 
   pushHistory: () => {
     const { layers, tracks, history, historyIndex } = get();

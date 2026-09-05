@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useStore } from '../../store/useStore';
+import { useAuthStore } from '../../store/authStore';
+import BackButton from '../common/BackButton';
 import {
   Plus, FolderOpen, Save, Undo2, Redo2, Upload, Download, Share2,
-  Settings, HelpCircle, Zap, ChevronDown, Monitor,
+  Settings, HelpCircle, Zap, ChevronDown, Monitor, LogIn, LogOut, Users,
   Grid3X3, Ruler, Magnet, Smartphone, Tablet, MonitorCheck
 } from 'lucide-react';
 
@@ -14,6 +16,7 @@ export default function TopBar() {
     showGuides, setShowGuides, showSafeZones, setShowSafeZones,
     snapToObjects, setSnapToObjects, setZoom
   } = useStore();
+  const { user, isAuthenticated, signOut, signInWithGoogle } = useAuthStore();
 
   const [showFileMenu, setShowFileMenu] = useState(false);
   const [showViewMenu, setShowViewMenu] = useState(false);
@@ -43,6 +46,8 @@ export default function TopBar() {
       style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border)' }}>
       {/* Left: Logo & Menus */}
       <div className="flex items-center gap-1">
+        <BackButton />
+        <div className="w-px h-5 mx-1" style={{ background: 'var(--border)' }} />
         <div className="flex items-center gap-2 mr-3 px-2">
           <div className="w-6 h-6 rounded flex items-center justify-center" 
             style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)' }}>
@@ -154,9 +159,18 @@ export default function TopBar() {
         <button className="btn btn-primary text-xs h-7 px-3" onClick={() => setShowExportModal(true)}>
           <Download size={14} /> Export
         </button>
-        <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-semibold ml-1 cursor-pointer">
-          U
+        {/* Collab indicator */}
+        <div className="flex items-center gap-1 ml-1 px-2 py-1 rounded-full text-[11px] hidden sm:flex" style={{ background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.2)', color: '#a5b4fc' }}>
+          <Users size={12} /> Live
         </div>
+        {isAuthenticated && user ? (
+          <div className="flex items-center gap-1 ml-1">
+            <img src={user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${user.email}`} className="w-7 h-7 rounded-full border" style={{ borderColor: 'var(--border)' }} alt="" />
+            <button className="tool-btn w-7 h-7" onClick={signOut} title="Logout"><LogOut size={14} /></button>
+          </div>
+        ) : (
+          <button className="btn btn-ghost text-xs h-7 px-2 ml-1" onClick={signInWithGoogle}><LogIn size={14} /> Login</button>
+        )}
       </div>
     </div>
   );

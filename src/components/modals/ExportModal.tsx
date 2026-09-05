@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useStore } from '../../store/useStore';
 import { X, Download, Film, Image, Music, Check, Loader2 } from 'lucide-react';
 
-export default function ExportModal() {
+export default function ExportModal({ onExported }: { onExported?: () => void }) {
   const { setShowExportModal, project } = useStore();
   const [exportType, setExportType] = useState<'video' | 'image' | 'audio'>('video');
   const [format, setFormat] = useState('mp4');
@@ -192,9 +192,14 @@ export default function ExportModal() {
               {isExporting ? <><Loader2 size={14} className="animate-spin" /> Exporting...</> : <><Download size={14} /> Export</>}
             </button>
           ) : (
-            <button className="btn btn-primary px-6" onClick={() => setShowExportModal(false)}>
-              <Download size={14} /> Download
-            </button>
+            <div className="flex gap-2">
+              <button className="btn btn-secondary px-4" onClick={() => setShowExportModal(false)}>
+                <Download size={14} /> Download Only
+              </button>
+              <button className="btn btn-primary px-6" onClick={() => { setShowExportModal(false); onExported?.(); window.dispatchEvent(new Event('xeditor:export-complete')) }}>
+                Next: Upload Options →
+              </button>
+            </div>
           )}
         </div>
       </div>

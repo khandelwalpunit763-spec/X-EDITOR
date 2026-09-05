@@ -1,16 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '../../store/useStore';
+import { useAuthStore } from '../../store/authStore';
+import BackButton from '../common/BackButton';
+import TemplateUploadModal from '../templates/TemplateUploadModal';
+import QRScanner, { TemplateSearchBar } from '../templates/QRScanner';
+import { QRCodeSVG } from 'qrcode.react';
 import { 
   Plus, FolderOpen, Image, Film, Wand2, Download, Trash2, Settings,
   Search, Grid3X3, List, Clock, MoreVertical, Zap, ArrowLeft,
-  Layers, Type, Music, Sparkles, FileText
+  Layers, Type, Music, Sparkles, FileText, LogIn, LogOut, QrCode, Upload
 } from 'lucide-react';
 
-export default function Dashboard() {
+export default function Dashboard({ onLogin }: { onLogin?: () => void }) {
   const { setView, setShowNewProjectModal, setEditorMode } = useStore();
+  const { isAuthenticated, user, signOut } = useAuthStore();
   const [activeTab, setActiveTab] = useState('projects');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showTemplateUpload, setShowTemplateUpload] = useState(false);
+  const [showQRScanner, setShowQRScanner] = useState(false);
+  const [customTemplates, setCustomTemplates] = useState<any[]>([]);
+
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem('xeditor_templates') || '[]')
+    setCustomTemplates(saved)
+  }, [showTemplateUpload, activeTab]);
 
   const recentProjects = [
     { id: '1', name: 'YouTube Intro', type: 'video' as const, thumbnail: '', updatedAt: '2 hours ago', size: '1920x1080' },
@@ -59,9 +73,8 @@ export default function Dashboard() {
       <div className="h-14 flex items-center justify-between px-6 border-b flex-shrink-0" 
         style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border)' }}>
         <div className="flex items-center gap-4">
-          <button onClick={() => setView('landing')} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
-            <ArrowLeft size={18} />
-          </button>
+          <BackButton label="Back" variant="ghost" />
+          <div className="w-px h-6" style={{ background: 'var(--border)' }} />
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" 
               style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)' }}>
@@ -84,9 +97,14 @@ export default function Dashboard() {
           <button className="btn btn-ghost" onClick={() => setShowNewProjectModal(true)}>
             <Settings size={16} />
           </button>
-          <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-semibold">
-            U
-          </div>
+          {isAuthenticated ? (
+            <div className="flex items-center gap-2">
+              <img src={user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.email}`} className="w-8 h-8 rounded-full border" style={{ borderColor: 'var(--border)' }} alt="" />
+              <button className="btn btn-ghost text-xs" onClick={signOut}><LogOut size={14} /> Logout</button>
+            </div>
+          ) : (
+            <button className="btn btn-primary text-xs" onClick={onLogin}><LogIn size={14} /> Login</button>
+          )}
         </div>
       </div>
 
@@ -228,27 +246,55 @@ export default function Dashboard() {
 
           {/* Templates Tab */}
           {activeTab === 'templates' && (
-            <div className="grid grid-cols-3 gap-4">
-              {templates.map(template => (
-                <button
-                  key={template.id}
-                  onClick={() => setShowNewProjectModal(true)}
-                  className="group rounded-xl overflow-hidden text-left transition-all hover:shadow-xl hover:scale-[1.02]"
-                  style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
-                >
-                  <div className="h-36 flex items-center justify-center relative" 
-                    style={{ background: `linear-gradient(135deg, ${getCategoryColor(template.category)}30, ${getCategoryColor(template.category)}10)` }}>
-                    <div className="text-center">
-                      <div className="text-lg font-bold mb-1" style={{ color: getCategoryColor(template.category) }}>{template.category}</div>
-                      <div className="text-xs text-gray-500">{template.size}</div>
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    <div className="font-medium text-sm">{template.name}</div>
-                    <div className="text-xs text-gray-500 mt-1">{template.size}</div>
-                  </div>
+            <div className="space-y-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <TemplateSearchBar onSearch={setSearchQuery} onQRScan={() => setShowQRScanner(true)} />
+                <button onClick={() => isAuthenticated ? setShowTemplateUpload(true) : onLogin?.()} className="btn btn-primary text-xs ml-auto">
+                  <Upload size={14} /> {isAuthenticated ? 'New Template' : 'Login to Add Template'}
                 </button>
-              ))}
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                {[...templates, ...customTemplates].filter(t => !searchQuery || t.name?.toLowerCase().includes(searchQuery.toLowerCase()) || t.title?.toLowerCase().includes(searchQuery.toLowerCase()) || t.category?.toLowerCase().includes(searchQuery.toLowerCase())).map(template => {
+                  const isCustom = !!template.title
+                  const name = template.title || template.name
+                  const size = template.preview_image ? `${template.width}x${template.height}` : template.size
+                  const qrVal = `https://x-editor.app/t/${name.toLowerCase().replace(/\s+/g,'-')}-${template.id}`
+                  return (
+                    <div
+                      key={template.id}
+                      className="group rounded-xl overflow-hidden text-left transition-all hover:shadow-xl hover:scale-[1.02] relative"
+                      style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
+                    >
+                      <button onClick={() => setShowNewProjectModal(true)} className="w-full text-left">
+                        <div className="h-36 flex items-center justify-center relative overflow-hidden" 
+                          style={{ background: template.preview_image ? '#000' : `linear-gradient(135deg, ${getCategoryColor(template.category)}30, ${getCategoryColor(template.category)}10)` }}>
+                          {template.preview_image ? (
+                            <img src={template.preview_image} alt={name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="text-center">
+                              <div className="text-lg font-bold mb-1" style={{ color: getCategoryColor(template.category) }}>{template.category}</div>
+                              <div className="text-xs text-gray-500">{template.size}</div>
+                            </div>
+                          )}
+                          <div className="absolute top-2 right-2 bg-white p-1 rounded-md shadow hidden group-hover:block">
+                            <QRCodeSVG value={qrVal} size={32} />
+                          </div>
+                        </div>
+                        <div className="p-3">
+                          <div className="font-medium text-sm flex items-center gap-1">{name} {isCustom && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-indigo-500 text-white">NEW</span>}</div>
+                          <div className="text-xs text-gray-500 mt-1">{size} • {template.category}</div>
+                        </div>
+                      </button>
+                      <div className="px-3 pb-3 flex items-center gap-2">
+                        <div className="flex-1 text-[11px] text-gray-600 truncate flex items-center gap-1"><QrCode size={10} /> QR ready</div>
+                        <button onClick={() => { navigator.clipboard.writeText(qrVal); alert('QR link copied!') }} className="text-[11px] px-2 py-1 rounded bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)] border" style={{ borderColor: 'var(--border)' }}>Copy QR Link</button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+              {showTemplateUpload && <TemplateUploadModal onClose={() => setShowTemplateUpload(false)} onCreated={() => setCustomTemplates(JSON.parse(localStorage.getItem('xeditor_templates')||'[]'))} />}
+              {showQRScanner && <QRScanner onClose={() => setShowQRScanner(false)} onScan={(text) => { setSearchQuery(text.split('/t/')[1]?.split('-')[0] || text); setShowQRScanner(false) }} />}
             </div>
           )}
 
