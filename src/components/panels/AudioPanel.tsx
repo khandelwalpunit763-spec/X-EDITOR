@@ -118,8 +118,8 @@ export default function AudioPanel() {
             <div className="text-[10px] text-gray-500 mb-2">Sound Effects</div>
             {['Transition Whoosh', 'Pop', 'Click', 'Notification', 'Applause', 'Rain'].map(sfx => (
               <button key={sfx} className="w-full flex items-center gap-2 px-2 py-1.5 rounded hover:bg-[var(--bg-hover)] transition-colors">
-                <div className="w-5 h-5 rounded flex items-center justify-center bg-indigo-500/20">
-                  <Music size={10} className="text-indigo-400" />
+                <div className="w-5 h-5 rounded flex items-center justify-center bg-[var(--accent)]/20">
+                  <Music size={10} className="text-[var(--accent)]" />
                 </div>
                 <span className="text-xs flex-1 text-left">{sfx}</span>
                 <Plus size={12} className="text-gray-600" />
@@ -140,7 +140,7 @@ export default function AudioPanel() {
             <button key={tool.name} className="w-full p-3 rounded-lg text-left hover:bg-[var(--bg-hover)] transition-colors"
               style={{ background: 'var(--bg-tertiary)' }}>
               <div className="flex items-center gap-2 mb-1">
-                <div className="text-indigo-400">{tool.icon}</div>
+                <div className="text-[var(--accent)]">{tool.icon}</div>
                 <span className="text-xs font-medium">{tool.name}</span>
               </div>
               <p className="text-[10px] text-gray-500">{tool.desc}</p>

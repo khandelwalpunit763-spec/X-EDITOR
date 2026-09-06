@@ -21,11 +21,11 @@ const trackIcons: Record<string, React.ReactNode> = {
 };
 
 const trackColors: Record<string, string> = {
-  video: '#6366f1',
+  video: '#00d9c0',
   image: '#f97316',
   text: '#22c55e',
   audio: '#eab308',
-  effect: '#a855f7',
+  effect: '#00b8a3',
 };
 
 export default function Timeline({ height }: Props) {
@@ -130,18 +130,18 @@ export default function Timeline({ height }: Props) {
 
         {/* Timecode display */}
         <div className="flex items-center gap-3">
-          <div className="text-xs font-mono text-gray-300 bg-[var(--bg-primary)] px-3 py-1 rounded">
+          <div className="text-xs font-mono text-gray-300 bg-[var(--bg-primary)] px-2 sm:px-3 py-1 rounded">
             {formatTime(currentTime)}
           </div>
-          <div className="text-[10px] text-gray-600">/</div>
-          <div className="text-xs font-mono text-gray-500">
+          <div className="text-[10px] text-gray-600 hidden sm:block">/</div>
+          <div className="text-xs font-mono text-gray-500 hidden sm:block">
             {formatTime(totalDuration)}
           </div>
         </div>
 
         {/* Right controls */}
         <div className="flex items-center gap-1">
-          <div className="flex items-center gap-1 mr-2 text-[10px] text-gray-500">
+          <div className="hidden sm:flex items-center gap-1 mr-2 text-[10px] text-gray-500">
             <span>{project?.fps || 30} FPS</span>
           </div>
           <button className="tool-btn w-7 h-7" onClick={() => setTimelineZoom(timelineZoom - 0.2)}>
@@ -151,11 +151,11 @@ export default function Timeline({ height }: Props) {
           <button className="tool-btn w-7 h-7" onClick={() => setTimelineZoom(timelineZoom + 0.2)}>
             <ZoomIn size={14} />
           </button>
-          <div className="w-px h-4 mx-1" style={{ background: 'var(--border)' }} />
-          <button className="tool-btn w-7 h-7" title="Snap">
+          <div className="w-px h-4 mx-1 hidden sm:block" style={{ background: 'var(--border)' }} />
+          <button className="tool-btn w-7 h-7 hidden sm:flex" title="Snap">
             <Maximize2 size={14} />
           </button>
-          <button className="tool-btn w-7 h-7" title="Ripple Delete">
+          <button className="tool-btn w-7 h-7 hidden sm:flex" title="Ripple Delete">
             <Scissors size={14} />
           </button>
         </div>
@@ -164,7 +164,7 @@ export default function Timeline({ height }: Props) {
       {/* Timeline Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Track Headers */}
-        <div className="w-40 flex-shrink-0 overflow-y-auto border-r" style={{ borderColor: 'var(--border)' }}>
+        <div className="w-24 sm:w-40 flex-shrink-0 overflow-y-auto border-r" style={{ borderColor: 'var(--border)' }}>
           {/* Time ruler header spacer */}
           <div className="h-6 border-b" style={{ borderColor: 'var(--border)', background: 'var(--bg-tertiary)' }} />
           

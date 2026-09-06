@@ -48,7 +48,7 @@ export default function AIModal() {
         <div className="flex items-center justify-between p-5 border-b flex-shrink-0" style={{ borderColor: 'var(--border)' }}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)' }}>
+              style={{ background: 'linear-gradient(135deg, #00d9c0, #00b8a3)' }}>
               <Sparkles size={20} className="text-white" />
             </div>
             <div>
@@ -74,7 +74,7 @@ export default function AIModal() {
                     onClick={() => setSelectedTool(t.id)}
                   >
                     <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8' }}>
+                      style={{ background: 'rgba(0, 217, 192, 0.15)', color: '#2ee6cf' }}>
                       {t.icon}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -97,7 +97,7 @@ export default function AIModal() {
               {/* Tool header */}
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center"
-                  style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8' }}>
+                  style={{ background: 'rgba(0, 217, 192, 0.15)', color: '#2ee6cf' }}>
                   {tool?.icon}
                 </div>
                 <div>
@@ -178,7 +178,7 @@ export default function AIModal() {
               {/* Processing state */}
               {isProcessing && (
                 <div className="flex items-center gap-3 p-4 rounded-lg" style={{ background: 'var(--bg-tertiary)' }}>
-                  <Loader2 size={20} className="text-indigo-400 animate-spin" />
+                  <Loader2 size={20} className="text-[var(--accent)] animate-spin" />
                   <div>
                     <p className="text-xs font-medium">Processing...</p>
                     <p className="text-[10px] text-gray-500">AI is analyzing your content</p>

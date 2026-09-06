@@ -2,7 +2,7 @@
 
 **Professional AI-Powered Video & Photo Editing Studio**
 
-A full-featured, web-based editing platform combining the power of Photoshop, Premiere Pro, CapCut, Canva, and Figma — all in your browser.
+A full-featured, web-based editing platform combining the power of Photoshop, Premiere Pro, CapCut, Canva, and Figma — all in your browser. Fully responsive (mobile + desktop), CapCut-inspired dark theme.
 
 ![React](https://img.shields.io/badge/React-19-blue?logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-6-blue?logo=typescript)
@@ -27,6 +27,18 @@ A full-featured, web-based editing platform combining the power of Photoshop, Pr
 - Brush, eraser, pencil, clone, healing, blur, sharpen, smudge, dodge, burn
 - Full color controls: brightness, contrast, exposure, saturation, curves, levels
 - 15+ filters: vintage, cinematic, B&W, warm, cool, vignette, grain, glow
+
+### 🎬 CapCut-Style VFX (new)
+- Animated effects: Glitch, Shake, 3D Zoom (Ken Burns), Flash, Zoom Blur, RGB Split
+- Chroma Key (green/blue screen removal) — real-time on any image layer
+- All filters/effects render live on canvas via CSS (brightness, contrast, saturation, etc.)
+
+### 🗜️ Bulk Image Compressor (new)
+- Drop any number of images at once — sab ek saath compress
+- Target size per image (MB) — 0.25 / 0.5 / 1 / 2 / 5 MB + custom
+- JPG / WebP output, binary-search quality + auto downscale to hit target
+- Per-image before/after sizes, % saved, download single or all
+- 100% private — compression runs in the browser, nothing uploads
 
 ### 🤖 AI Tools
 - Background remover & replacement (image + video)
@@ -100,8 +112,8 @@ A full-featured, web-based editing platform combining the power of Photoshop, Pr
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/x-editor.git
-cd x-editor
+git clone https://github.com/khandelwalpunit763-spec/X-EDITOR.git
+cd X-EDITOR
 
 # Install dependencies
 npm install

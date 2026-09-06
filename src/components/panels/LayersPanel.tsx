@@ -15,11 +15,11 @@ const typeIcons: Record<string, React.ReactNode> = {
 
 const typeColors: Record<string, string> = {
   image: '#f97316',
-  text: '#6366f1',
+  text: '#00d9c0',
   shape: '#22c55e',
   video: '#3b82f6',
   audio: '#eab308',
-  group: '#a855f7',
+  group: '#00b8a3',
 };
 
 export default function LayersPanel() {
@@ -29,7 +29,7 @@ export default function LayersPanel() {
     const defaults: Record<string, any> = {
       image: { name: 'New Image', width: 400, height: 300, src: '' },
       text: { name: 'New Text', width: 300, height: 60, text: { content: 'Hello World', fontFamily: 'Inter', fontSize: 32, fontWeight: 400, fontStyle: 'normal', textDecoration: 'none', color: '#ffffff', letterSpacing: 0, lineHeight: 1.5, align: 'left' as const } },
-      shape: { name: 'New Shape', width: 200, height: 200, shape: { type: 'rectangle' as const, fill: '#6366f1', cornerRadius: 8 } },
+      shape: { name: 'New Shape', width: 200, height: 200, shape: { type: 'rectangle' as const, fill: '#00d9c0', cornerRadius: 8 } },
     };
     addLayer({ type: type as any, ...defaults[type] });
   };
@@ -76,7 +76,7 @@ export default function LayersPanel() {
                 key={layer.id}
                 className={`flex items-center gap-2 px-2 py-1.5 cursor-pointer transition-colors ${
                   selectedLayerId === layer.id 
-                    ? 'bg-[var(--accent)]/10 border-l-2 border-l-indigo-500' 
+                    ? 'bg-[var(--accent)]/10 border-l-2 border-l-[var(--accent)]' 
                     : 'hover:bg-[var(--bg-hover)] border-l-2 border-l-transparent'
                 }`}
                 onClick={() => setSelectedLayerId(layer.id)}

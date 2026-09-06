@@ -47,19 +47,19 @@ export default function TopBar() {
       {/* Left: Logo & Menus */}
       <div className="flex items-center gap-1">
         <BackButton />
-        <div className="w-px h-5 mx-1" style={{ background: 'var(--border)' }} />
-        <div className="flex items-center gap-2 mr-3 px-2">
+        <div className="w-px h-5 mx-1 hidden sm:block" style={{ background: 'var(--border)' }} />
+        <div className="flex items-center gap-2 mr-1 sm:mr-3 px-1 sm:px-2">
           <div className="w-6 h-6 rounded flex items-center justify-center" 
-            style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)' }}>
-            <Zap size={14} className="text-white" />
+            style={{ background: 'linear-gradient(135deg, #00d9c0, #00b8a3)' }}>
+            <Zap size={14} className="text-black" />
           </div>
-          <span className="text-sm font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+          <span className="text-sm font-bold text-white hidden sm:inline">
             X-EDITOR
           </span>
         </div>
 
         {/* File Menu */}
-        <div className="relative">
+        <div className="relative hidden md:block">
           <button 
             className="flex items-center gap-1 px-2 py-1 rounded text-xs text-gray-400 hover:text-white hover:bg-[var(--bg-hover)] transition-all"
             onClick={() => { setShowFileMenu(!showFileMenu); setShowViewMenu(false); }}
@@ -82,12 +82,12 @@ export default function TopBar() {
         </div>
 
         {/* Edit */}
-        <button className="flex items-center gap-1 px-2 py-1 rounded text-xs text-gray-400 hover:text-white hover:bg-[var(--bg-hover)] transition-all">
+        <button className="hidden md:flex items-center gap-1 px-2 py-1 rounded text-xs text-gray-400 hover:text-white hover:bg-[var(--bg-hover)] transition-all">
           Edit
         </button>
 
         {/* View Menu */}
-        <div className="relative">
+        <div className="relative hidden md:block">
           <button 
             className="flex items-center gap-1 px-2 py-1 rounded text-xs text-gray-400 hover:text-white hover:bg-[var(--bg-hover)] transition-all"
             onClick={() => { setShowViewMenu(!showViewMenu); setShowFileMenu(false); }}
@@ -102,7 +102,7 @@ export default function TopBar() {
                     {item.icon}
                     <span className="flex-1 text-left">{item.label}</span>
                     {item.active !== undefined && (
-                      <div className={`w-3 h-3 rounded border ${item.active ? 'bg-indigo-500 border-indigo-500' : 'border-gray-600'}`} />
+                      <div className={`w-3 h-3 rounded border ${item.active ? 'bg-[var(--accent)] border-[var(--accent)]' : 'border-gray-600'}`} />
                     )}
                   </button>
                 )
@@ -113,8 +113,8 @@ export default function TopBar() {
       </div>
 
       {/* Center: Project Name & Quick Actions */}
-      <div className="flex items-center gap-2">
-        <span className="text-xs text-gray-500">{project?.name || 'Untitled Project'}</span>
+      <div className="flex items-center gap-2 min-w-0">
+        <span className="text-xs text-gray-500 truncate max-w-[90px] sm:max-w-none">{project?.name || 'Untitled Project'}</span>
         <div className="flex items-center gap-1 ml-2">
           <button className="tool-btn w-7 h-7" onClick={undo} title="Undo (Ctrl+Z)">
             <Undo2 size={14} />
@@ -128,14 +128,14 @@ export default function TopBar() {
       {/* Right: Actions */}
       <div className="flex items-center gap-1">
         {/* Resolution indicator */}
-        <div className="flex items-center gap-1 px-2 py-1 rounded text-xs text-gray-500 mr-2"
+        <div className="hidden lg:flex items-center gap-1 px-2 py-1 rounded text-xs text-gray-500 mr-2"
           style={{ background: 'var(--bg-tertiary)' }}>
           <Monitor size={12} />
           <span>{project?.width || 1920}×{project?.height || 1080}</span>
         </div>
 
         {/* Device preview */}
-        <div className="flex items-center gap-0.5 mr-2" style={{ background: 'var(--bg-tertiary)', borderRadius: 6, padding: 2 }}>
+        <div className="hidden lg:flex items-center gap-0.5 mr-2" style={{ background: 'var(--bg-tertiary)', borderRadius: 6, padding: 2 }}>
           <button className="tool-btn w-6 h-6" title="Desktop">
             <MonitorCheck size={13} />
           </button>
@@ -147,26 +147,26 @@ export default function TopBar() {
           </button>
         </div>
 
-        <button className="btn btn-ghost text-xs h-7 px-2" onClick={() => setShowShortcutsModal(true)}>
+        <button className="btn btn-ghost text-xs h-7 px-2 hidden sm:flex" onClick={() => setShowShortcutsModal(true)}>
           <HelpCircle size={14} />
         </button>
-        <button className="btn btn-ghost text-xs h-7 px-2" onClick={() => setShowSettingsModal(true)}>
+        <button className="btn btn-ghost text-xs h-7 px-2 hidden sm:flex" onClick={() => setShowSettingsModal(true)}>
           <Settings size={14} />
         </button>
-        <button className="btn btn-ghost text-xs h-7 px-2" onClick={() => setShowExportModal(true)}>
+        <button className="btn btn-ghost text-xs h-7 px-2 hidden sm:flex" onClick={() => setShowExportModal(true)}>
           <Share2 size={14} />
         </button>
-        <button className="btn btn-primary text-xs h-7 px-3" onClick={() => setShowExportModal(true)}>
-          <Download size={14} /> Export
+        <button className="btn btn-primary text-xs h-7 px-2 sm:px-3" onClick={() => setShowExportModal(true)}>
+          <Download size={14} /> <span className="hidden sm:inline">Export</span>
         </button>
         {/* Collab indicator */}
-        <div className="flex items-center gap-1 ml-1 px-2 py-1 rounded-full text-[11px] hidden sm:flex" style={{ background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.2)', color: '#a5b4fc' }}>
+        <div className="flex items-center gap-1 ml-1 px-2 py-1 rounded-full text-[11px] hidden sm:flex" style={{ background: 'rgba(0,217,192,0.1)', border: '1px solid rgba(0,217,192,0.2)', color: 'var(--accent-hover)' }}>
           <Users size={12} /> Live
         </div>
         {isAuthenticated && user ? (
           <div className="flex items-center gap-1 ml-1">
-            <img src={user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${user.email}`} className="w-7 h-7 rounded-full border" style={{ borderColor: 'var(--border)' }} alt="" />
-            <button className="tool-btn w-7 h-7" onClick={signOut} title="Logout"><LogOut size={14} /></button>
+            <img src={user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${user.email}`} className="w-7 h-7 rounded-full border hidden sm:block" style={{ borderColor: 'var(--border)' }} alt="" />
+            <button className="tool-btn w-7 h-7 hidden sm:flex" onClick={signOut} title="Logout"><LogOut size={14} /></button>
           </div>
         ) : (
           <button className="btn btn-ghost text-xs h-7 px-2 ml-1" onClick={signInWithGoogle}><LogIn size={14} /> Login</button>

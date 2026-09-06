@@ -49,7 +49,7 @@ export default function PropertiesPanel() {
       {/* Layer header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full" style={{ background: layer.type === 'text' ? '#6366f1' : layer.type === 'shape' ? '#22c55e' : '#f97316' }} />
+          <div className="w-2 h-2 rounded-full" style={{ background: layer.type === 'text' ? '#00d9c0' : layer.type === 'shape' ? '#22c55e' : '#f97316' }} />
           <span className="text-xs font-medium truncate max-w-[120px]">{layer.name}</span>
           <span className="text-[10px] text-gray-600 capitalize">{layer.type}</span>
         </div>

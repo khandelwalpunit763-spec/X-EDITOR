@@ -85,7 +85,7 @@ export default function TemplateUploadModal({ onClose, onCreated }: Props) {
       <div className="relative w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
         style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
         <div className="flex items-center justify-between p-5 border-b" style={{ borderColor: 'var(--border)' }}>
-          <h2 className="text-base font-bold flex items-center gap-2"><Sparkles size={18} className="text-indigo-400" /> New Template Banao</h2>
+          <h2 className="text-base font-bold flex items-center gap-2"><Sparkles size={18} className="text-[var(--accent)]" /> New Template Banao</h2>
           <button onClick={onClose} className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-[var(--bg-hover)] text-gray-500"><X size={16} /></button>
         </div>
 

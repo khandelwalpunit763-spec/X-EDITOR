@@ -36,7 +36,7 @@ export default function WatermarkModal() {
               key={tab.id}
               className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm transition-all ${
                 activeTab === tab.id 
-                  ? 'text-white border-b-2 border-indigo-500' 
+                  ? 'text-white border-b-2 border-[var(--accent)]' 
                   : 'text-gray-400 hover:text-white'
               }`}
               onClick={() => setActiveTab(tab.id as any)}
@@ -138,7 +138,7 @@ export default function WatermarkModal() {
               {/* AI Detection */}
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-tertiary)' }}>
                 <div className="flex items-center gap-2 mb-3">
-                  <Sparkles size={16} className="text-indigo-400" />
+                  <Sparkles size={16} className="text-[var(--accent)]" />
                   <span className="text-sm font-medium">AI Watermark Detection</span>
                 </div>
                 <p className="text-xs text-gray-500 mb-3">

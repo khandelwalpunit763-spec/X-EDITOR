@@ -50,7 +50,7 @@ export default function QRScanner({ onScan, onClose }: Props) {
       <div className="relative w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl"
         style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
         <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: 'var(--border)' }}>
-          <h3 className="text-sm font-bold flex items-center gap-2"><QrCode size={16} className="text-indigo-400" /> QR Scan Karein</h3>
+          <h3 className="text-sm font-bold flex items-center gap-2"><QrCode size={16} className="text-[var(--accent)]" /> QR Scan Karein</h3>
           <button onClick={onClose} className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-[var(--bg-hover)] text-gray-500"><X size={16} /></button>
         </div>
         <div className="p-4">

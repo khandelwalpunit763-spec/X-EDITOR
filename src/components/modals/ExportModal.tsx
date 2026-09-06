@@ -58,7 +58,7 @@ export default function ExportModal({ onExported }: { onExported?: () => void })
                 key={type.id}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all ${
                   exportType === type.id
-                    ? 'bg-[var(--accent)] text-white shadow-lg shadow-indigo-500/20'
+                    ? 'bg-[var(--accent)] text-white shadow-lg shadow-[var(--accent)]/20'
                     : 'bg-[var(--bg-tertiary)] text-gray-400 hover:text-white'
                 }`}
                 onClick={() => setExportType(type.id as any)}

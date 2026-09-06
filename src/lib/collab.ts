@@ -17,7 +17,7 @@ export type Collaborator = {
   avatar?: string
 }
 
-const COLORS = ['#6366f1','#8b5cf6','#ec4899','#f43f5e','#f97316','#eab308','#22c55e','#06b6d4']
+const COLORS = ['#00d9c0','#14b8a6','#ec4899','#f43f5e','#f97316','#eab308','#22c55e','#06b6d4']
 
 export function getCollabColor(userId: string) {
   let hash = 0

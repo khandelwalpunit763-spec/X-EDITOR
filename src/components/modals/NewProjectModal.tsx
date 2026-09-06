@@ -29,8 +29,8 @@ export default function NewProjectModal() {
   const [fps, setFps] = useState(30);
   const [bgType, setBgType] = useState<'transparent' | 'solid' | 'gradient' | 'image' | 'video'>('solid');
   const [bgColor, setBgColor] = useState('#000000');
-  const [gradientFrom, setGradientFrom] = useState('#6366f1');
-  const [gradientTo, setGradientTo] = useState('#a855f7');
+  const [gradientFrom, setGradientFrom] = useState('#00d9c0');
+  const [gradientTo, setGradientTo] = useState('#00b8a3');
 
   const handleRatioSelect = (ratio: typeof aspectRatios[0]) => {
     setSelectedRatio(ratio.id);
@@ -97,7 +97,7 @@ export default function NewProjectModal() {
                   key={ratio.id}
                   className={`p-3 rounded-xl text-center transition-all ${
                     selectedRatio === ratio.id
-                      ? 'bg-[var(--accent)] text-white shadow-lg shadow-indigo-500/20'
+                      ? 'bg-[var(--accent)] text-white shadow-lg shadow-[var(--accent)]/20'
                       : 'bg-[var(--bg-tertiary)] text-gray-400 hover:text-white hover:bg-[var(--bg-hover)]'
                   }`}
                   onClick={() => handleRatioSelect(ratio)}

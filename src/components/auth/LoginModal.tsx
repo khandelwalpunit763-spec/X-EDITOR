@@ -24,7 +24,7 @@ export default function LoginModal({ onClose }: Props) {
 
         <div className="p-6 text-center">
           <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3"
-            style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)' }}>
+            style={{ background: 'linear-gradient(135deg, #00d9c0, #00b8a3)' }}>
             <Zap size={22} className="text-white" />
           </div>
           <h2 className="text-lg font-bold">X-EDITOR me Welcome</h2>

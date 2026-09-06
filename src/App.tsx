@@ -5,6 +5,7 @@ import { useAutoSave } from './hooks/useAutoSave';
 import LandingPage from './components/landing/LandingPage';
 import Dashboard from './components/dashboard/Dashboard';
 import EditorLayout from './components/editor/EditorLayout';
+import Compressor from './components/compressor/Compressor';
 import NewProjectModal from './components/modals/NewProjectModal';
 import ExportModal from './components/modals/ExportModal';
 import ImportModal from './components/modals/ImportModal';
@@ -114,16 +115,17 @@ function App() {
   if (authLoading) {
     return (
       <div className="w-screen h-screen flex items-center justify-center bg-[var(--bg-primary)]">
-        <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)] relative">
+    <div className="w-full h-full overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)] relative">
       {view === 'landing' && <LandingPage onLogin={() => setShowLoginModal(true)} />}
       {view === 'dashboard' && <Dashboard onLogin={() => setShowLoginModal(true)} />}
       {view === 'editor' && <EditorLayout onLogin={() => setShowLoginModal(true)} />}
+      {view === 'compress' && <Compressor />}
 
       {showNewProjectModal && <NewProjectModal />}
       {showExportModal && <ExportModal onExported={() => setShowShareModal(true)} />}

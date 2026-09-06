@@ -12,7 +12,7 @@ export function AuthGuard({ children, fallback }: Props) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -33,8 +33,8 @@ export function ViewOnlyOverlay() {
       <div className="pointer-events-auto max-w-sm w-full rounded-2xl p-6 text-center shadow-2xl"
         style={{ background: 'rgba(22, 22, 29, 0.95)', border: '1px solid var(--border)', backdropFilter: 'blur(20px)' }}>
         <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4"
-          style={{ background: 'rgba(99, 102, 241, 0.15)', border: '1px solid rgba(99,102,241,0.3)' }}>
-          <Eye size={22} className="text-indigo-400" />
+          style={{ background: 'rgba(0, 217, 192, 0.15)', border: '1px solid rgba(99,102,241,0.3)' }}>
+          <Eye size={22} className="text-[var(--accent)]" />
         </div>
         <h3 className="text-sm font-bold mb-1">View-Only Mode</h3>
         <p className="text-xs text-gray-400 mb-4 leading-relaxed">

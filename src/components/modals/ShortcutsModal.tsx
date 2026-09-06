@@ -51,7 +51,7 @@ export default function ShortcutsModal() {
         style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
         <div className="flex items-center justify-between p-5 border-b flex-shrink-0" style={{ borderColor: 'var(--border)' }}>
           <div className="flex items-center gap-2">
-            <Keyboard size={20} className="text-indigo-400" />
+            <Keyboard size={20} className="text-[var(--accent)]" />
             <h2 className="text-lg font-bold">Keyboard Shortcuts</h2>
           </div>
           <button className="tool-btn" onClick={() => setShowShortcutsModal(false)}>

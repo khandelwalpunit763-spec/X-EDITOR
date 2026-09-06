@@ -3,9 +3,9 @@ import { useStore } from '../../store/useStore';
 import { Wand2, Image, Type, Music, Layers, Sparkles, Eraser, ChevronRight } from 'lucide-react';
 
 const aiTools = [
-  { id: 'bgRemove', name: 'Background Remover', desc: 'Remove background from images/videos', icon: <Layers size={18} />, category: 'photo', color: '#6366f1' },
-  { id: 'bgReplace', name: 'Background Replace', desc: 'Replace background with AI', icon: <Image size={18} />, category: 'photo', color: '#8b5cf6' },
-  { id: 'objectRemove', name: 'Object Removal', desc: 'Remove objects from content', icon: <Eraser size={18} />, category: 'photo', color: '#a855f7' },
+  { id: 'bgRemove', name: 'Background Remover', desc: 'Remove background from images/videos', icon: <Layers size={18} />, category: 'photo', color: '#00d9c0' },
+  { id: 'bgReplace', name: 'Background Replace', desc: 'Replace background with AI', icon: <Image size={18} />, category: 'photo', color: '#14b8a6' },
+  { id: 'objectRemove', name: 'Object Removal', desc: 'Remove objects from content', icon: <Eraser size={18} />, category: 'photo', color: '#00b8a3' },
   { id: 'upscale', name: 'Image Upscaler', desc: 'Enhance resolution 2x-4x', icon: <Sparkles size={18} />, category: 'photo', color: '#d946ef' },
   { id: 'enhance', name: 'Auto Enhance', desc: 'One-click image enhancement', icon: <Wand2 size={18} />, category: 'photo', color: '#ec4899' },
   { id: 'faceBlur', name: 'Face Blur', desc: 'Automatically detect and blur faces', icon: <Image size={18} />, category: 'photo', color: '#f43f5e' },
@@ -14,7 +14,7 @@ const aiTools = [
   { id: 'textGen', name: 'Text to Image', desc: 'Generate images from text', icon: <Type size={18} />, category: 'gen', color: '#22c55e' },
   { id: 'autoCaption', name: 'Auto Captions', desc: 'Generate subtitles from audio', icon: <Type size={18} />, category: 'video', color: '#14b8a6' },
   { id: 'noiseRemove', name: 'Noise Removal', desc: 'Remove audio background noise', icon: <Music size={18} />, category: 'audio', color: '#3b82f6' },
-  { id: 'silence', name: 'Silence Removal', desc: 'Remove silent parts automatically', icon: <Music size={18} />, category: 'audio', color: '#6366f1' },
+  { id: 'silence', name: 'Silence Removal', desc: 'Remove silent parts automatically', icon: <Music size={18} />, category: 'audio', color: '#00d9c0' },
 ];
 
 export default function AIPanel() {

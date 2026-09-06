@@ -8,7 +8,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { 
   Plus, FolderOpen, Image, Film, Wand2, Download, Trash2, Settings,
   Search, Grid3X3, List, Clock, MoreVertical, Zap, ArrowLeft,
-  Layers, Type, Music, Sparkles, FileText, LogIn, LogOut, QrCode, Upload
+  Layers, Type, Music, Sparkles, FileText, LogIn, LogOut, QrCode, Upload, FileImage
 } from 'lucide-react';
 
 export default function Dashboard({ onLogin }: { onLogin?: () => void }) {
@@ -55,16 +55,16 @@ export default function Dashboard({ onLogin }: { onLogin?: () => void }) {
 
   const getProjectColor = (type: string) => {
     return type === 'video' 
-      ? 'from-indigo-600 to-purple-600' 
-      : 'from-purple-600 to-pink-600';
+      ? 'from-[#00d9c0] to-[#0891b2]' 
+      : 'from-[#22d3ee] to-[#0e7490]';
   };
 
   const getCategoryColor = (cat: string) => {
     const colors: Record<string, string> = {
-      YouTube: '#ff0000', Instagram: '#e4405f', TikTok: '#000000',
+      YouTube: '#ff0000', Instagram: '#e4405f', TikTok: '#25f4ee',
       Facebook: '#1877f2', Twitter: '#1da1f2', LinkedIn: '#0077b5'
     };
-    return colors[cat] || '#6366f1';
+    return colors[cat] || '#00d9c0';
   };
 
   return (
@@ -74,27 +74,27 @@ export default function Dashboard({ onLogin }: { onLogin?: () => void }) {
         style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border)' }}>
         <div className="flex items-center gap-4">
           <BackButton label="Back" variant="ghost" />
-          <div className="w-px h-6" style={{ background: 'var(--border)' }} />
+          <div className="w-px h-6 hidden sm:block" style={{ background: 'var(--border)' }} />
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" 
-              style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)' }}>
-              <Zap size={16} className="text-white" />
+              style={{ background: 'linear-gradient(135deg, #00d9c0, #00b8a3)' }}>
+              <Zap size={16} className="text-black" />
             </div>
             <span className="font-bold">X-EDITOR</span>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="relative">
+          <div className="relative hidden sm:block">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
             <input
               type="text"
               placeholder="Search projects..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="input pl-9 w-64"
+              className="input pl-9 w-48 lg:w-64"
             />
           </div>
-          <button className="btn btn-ghost" onClick={() => setShowNewProjectModal(true)}>
+          <button className="btn btn-ghost hidden sm:flex" onClick={() => setShowNewProjectModal(true)}>
             <Settings size={16} />
           </button>
           {isAuthenticated ? (
@@ -109,8 +109,8 @@ export default function Dashboard({ onLogin }: { onLogin?: () => void }) {
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <div className="w-56 flex-shrink-0 border-r flex flex-col py-4" 
+        {/* Sidebar (desktop) */}
+        <div className="w-56 flex-shrink-0 border-r flex-col py-4 hidden md:flex" 
           style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border)' }}>
           {/* New Project Buttons */}
           <div className="px-4 mb-6 flex flex-col gap-2">
@@ -121,6 +121,10 @@ export default function Dashboard({ onLogin }: { onLogin?: () => void }) {
             <button className="btn btn-secondary w-full justify-start"
               onClick={() => { setEditorMode('photo'); setShowNewProjectModal(true); }}>
               <Image size={16} /> New Photo Project
+            </button>
+            <button className="btn btn-secondary w-full justify-start"
+              onClick={() => setView('compress')}>
+              <FileImage size={16} /> Image Compressor
             </button>
           </div>
 
@@ -146,14 +150,35 @@ export default function Dashboard({ onLogin }: { onLogin?: () => void }) {
           <div className="px-4 pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
             <div className="text-xs text-gray-500 mb-2">Storage Used</div>
             <div className="w-full h-2 rounded-full bg-gray-800 mb-1">
-              <div className="h-full rounded-full bg-indigo-600" style={{ width: '35%' }} />
+              <div className="h-full rounded-full bg-[var(--accent)]" style={{ width: '35%' }} />
             </div>
             <div className="text-xs text-gray-600">3.5 GB of 10 GB</div>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+          {/* Mobile tab bar */}
+          <div className="flex gap-2 overflow-x-auto no-scrollbar mb-4 md:hidden">
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  activeTab === tab.id ? 'bg-[var(--accent)] text-black' : 'bg-[var(--bg-secondary)] text-gray-400 border border-[var(--border)]'
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+            <button
+              onClick={() => setView('compress')}
+              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--bg-secondary)] text-[var(--accent)] border border-[var(--accent)]/40"
+            >
+              <FileImage size={14} /> Compressor
+            </button>
+          </div>
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -180,16 +205,16 @@ export default function Dashboard({ onLogin }: { onLogin?: () => void }) {
 
           {/* Projects Tab */}
           {activeTab === 'projects' && (
-            <div className={viewMode === 'grid' ? 'grid grid-cols-3 gap-4' : 'flex flex-col gap-2'}>
+            <div className={viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4' : 'flex flex-col gap-2'}>
               {/* New Project Card */}
               <button
                 onClick={() => setShowNewProjectModal(true)}
-                className="group rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-3 transition-all hover:border-indigo-500 hover:bg-[var(--bg-secondary)]"
+                className="group rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-3 transition-all hover:border-[var(--accent)] hover:bg-[var(--bg-secondary)]"
                 style={{ borderColor: 'var(--border)', minHeight: viewMode === 'grid' ? '220px' : '80px' }}
               >
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center transition-all group-hover:scale-110"
-                  style={{ background: 'rgba(99, 102, 241, 0.15)' }}>
-                  <Plus size={24} className="text-indigo-400" />
+                  style={{ background: 'rgba(0, 217, 192, 0.15)' }}>
+                  <Plus size={24} className="text-[var(--accent)]" />
                 </div>
                 <span className="text-sm font-medium text-gray-400 group-hover:text-white">New Project</span>
               </button>
@@ -253,7 +278,7 @@ export default function Dashboard({ onLogin }: { onLogin?: () => void }) {
                   <Upload size={14} /> {isAuthenticated ? 'New Template' : 'Login to Add Template'}
                 </button>
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[...templates, ...customTemplates].filter(t => !searchQuery || t.name?.toLowerCase().includes(searchQuery.toLowerCase()) || t.title?.toLowerCase().includes(searchQuery.toLowerCase()) || t.category?.toLowerCase().includes(searchQuery.toLowerCase())).map(template => {
                   const isCustom = !!template.title
                   const name = template.title || template.name
@@ -281,7 +306,7 @@ export default function Dashboard({ onLogin }: { onLogin?: () => void }) {
                           </div>
                         </div>
                         <div className="p-3">
-                          <div className="font-medium text-sm flex items-center gap-1">{name} {isCustom && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-indigo-500 text-white">NEW</span>}</div>
+                          <div className="font-medium text-sm flex items-center gap-1">{name} {isCustom && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[var(--accent)] text-white">NEW</span>}</div>
                           <div className="text-xs text-gray-500 mt-1">{size} • {template.category}</div>
                         </div>
                       </button>
@@ -300,11 +325,11 @@ export default function Dashboard({ onLogin }: { onLogin?: () => void }) {
 
           {/* AI Tools Tab */}
           {activeTab === 'ai' && (
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
-                { icon: <Layers size={24} />, name: 'Background Remover', desc: 'Remove backgrounds from images and videos', color: '#6366f1' },
-                { icon: <Wand2 size={24} />, name: 'Object Removal', desc: 'Remove unwanted objects from your content', color: '#8b5cf6' },
-                { icon: <Sparkles size={24} />, name: 'Image Upscaler', desc: 'Enhance resolution up to 4x with AI', color: '#a855f7' },
+                { icon: <Layers size={24} />, name: 'Background Remover', desc: 'Remove backgrounds from images and videos', color: '#00d9c0' },
+                { icon: <Wand2 size={24} />, name: 'Object Removal', desc: 'Remove unwanted objects from your content', color: '#14b8a6' },
+                { icon: <Sparkles size={24} />, name: 'Image Upscaler', desc: 'Enhance resolution up to 4x with AI', color: '#00b8a3' },
                 { icon: <Type size={24} />, name: 'Auto Captions', desc: 'Generate subtitles from audio automatically', color: '#d946ef' },
                 { icon: <Music size={24} />, name: 'Noise Removal', desc: 'Remove background noise from audio', color: '#ec4899' },
                 { icon: <Image size={24} />, name: 'AI Generation', desc: 'Generate images from text descriptions', color: '#f43f5e' },

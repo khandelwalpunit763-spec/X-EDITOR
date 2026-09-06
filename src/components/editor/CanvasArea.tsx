@@ -1,16 +1,19 @@
 import { useRef, useEffect, useState } from 'react';
 import { useStore } from '../../store/useStore';
-import { 
+import { buildFilterCss, analyzeFilters } from '../../lib/vfx';
+import {
   ZoomIn, ZoomOut, Maximize, Grid3X3, Monitor, RotateCcw
 } from 'lucide-react';
 
+const GRAIN_SVG = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E\")";
+
 export default function CanvasArea() {
-  const { 
-    zoom, setZoom, project, showGrid, setShowGrid, 
+  const {
+    zoom, setZoom, project, showGrid, setShowGrid,
     showGuides, showSafeZones, layers, selectedLayerId,
     setSelectedLayerId, activeTool
   } = useStore();
-  
+
   const canvasRef = useRef<HTMLDivElement>(null);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
 
@@ -22,8 +25,8 @@ export default function CanvasArea() {
     const { isPlaying } = useStore.getState();
     if (!isPlaying) return;
     const interval = setInterval(() => {
-      useStore.getState().setCurrentTime(useStore.getState().currentTime + 1/30);
-    }, 1000/30);
+      useStore.getState().setCurrentTime(useStore.getState().currentTime + 1 / 30);
+    }, 1000 / 30);
     return () => clearInterval(interval);
   }, []);
 
@@ -42,7 +45,7 @@ export default function CanvasArea() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden" style={{ background: 'var(--bg-primary)' }}>
       {/* Canvas */}
-      <div 
+      <div
         ref={canvasRef}
         className="flex-1 overflow-hidden relative"
         onWheel={handleWheel}
@@ -51,19 +54,27 @@ export default function CanvasArea() {
         {/* Center canvas */}
         <div className="absolute inset-0 flex items-center justify-center"
           style={{ transform: `translate(${panOffset.x}px, ${panOffset.y}px)` }}>
-          <div 
+          <div
             className="relative shadow-2xl"
-            style={{ 
-              width: displayW, 
+            style={{
+              width: displayW,
               height: displayH,
-              background: project?.background?.type === 'solid' ? project.background.color : 
-                          project?.background?.type === 'gradient' ? 
-                          `linear-gradient(${project.background.gradient?.angle || 0}deg, ${project.background.gradient?.from || '#000'}, ${project.background.gradient?.to || '#333'})` :
-                          '#1a1a2e',
+              background: project?.background?.type === 'solid' ? project.background.color :
+                project?.background?.type === 'gradient' ?
+                  `linear-gradient(${project.background.gradient?.angle || 0}deg, ${project.background.gradient?.from || '#000'}, ${project.background.gradient?.to || '#333'})` :
+                  project?.background?.type === 'transparent' ? 'transparent' : '#16161a',
               minWidth: 200,
               minHeight: 120,
             }}
           >
+            {/* Transparent checkerboard */}
+            {project?.background?.type === 'transparent' && (
+              <div className="absolute inset-0 pointer-events-none" style={{
+                backgroundImage: 'conic-gradient(#1f1f23 90deg, #141417 90deg 180deg, #1f1f23 180deg 270deg, #141417 270deg)',
+                backgroundSize: `${16 * scale}px ${16 * scale}px`,
+              }} />
+            )}
+
             {/* Grid overlay */}
             {showGrid && (
               <div className="absolute inset-0 pointer-events-none" style={{
@@ -71,7 +82,7 @@ export default function CanvasArea() {
                 backgroundSize: `${20 * scale}px ${20 * scale}px`
               }} />
             )}
-            
+
             {/* Safe zones */}
             {showSafeZones && (
               <div className="absolute inset-0 pointer-events-none">
@@ -95,53 +106,72 @@ export default function CanvasArea() {
             )}
 
             {/* Render layers */}
-            {layers.filter(l => l.visible).map(layer => (
-              <div
-                key={layer.id}
-                className={`absolute cursor-move transition-shadow ${
-                  selectedLayerId === layer.id ? 'ring-2 ring-indigo-500 ring-offset-1' : ''
-                }`}
-                style={{
-                  left: layer.x * scale,
-                  top: layer.y * scale,
-                  width: layer.width * scale,
-                  height: layer.height * scale,
-                  opacity: layer.opacity / 100,
-                  transform: `rotate(${layer.rotation}deg) scaleX(${layer.scaleX}) scaleY(${layer.scaleY})`,
-                  mixBlendMode: layer.blendMode as any,
-                }}
-                onClick={(e) => { e.stopPropagation(); setSelectedLayerId(layer.id); }}
-              >
-                {layer.type === 'text' && layer.text && (
-                  <div className="w-full h-full flex items-center justify-center p-2"
-                    style={{
-                      fontFamily: layer.text.fontFamily,
-                      fontSize: layer.text.fontSize * scale,
-                      fontWeight: layer.text.fontWeight,
-                      fontStyle: layer.text.fontStyle,
-                      color: layer.text.color,
-                      textAlign: layer.text.align,
-                      letterSpacing: layer.text.letterSpacing,
-                      lineHeight: layer.text.lineHeight,
-                      textDecoration: layer.text.textDecoration,
-                      WebkitTextStroke: layer.text.stroke ? `${layer.text.stroke.width}px ${layer.text.stroke.color}` : undefined,
-                      textShadow: layer.text.shadow ? `${layer.text.shadow.x}px ${layer.text.shadow.y}px ${layer.text.shadow.blur}px ${layer.text.shadow.color}` : undefined,
-                    }}>
-                    {layer.text.content}
+            {layers.filter(l => l.visible).map(layer => {
+              const { animClasses, overlays } = analyzeFilters(layer.filters);
+              const filterCss = buildFilterCss(layer.filters);
+              return (
+                <div
+                  key={layer.id}
+                  className={`absolute cursor-move ${selectedLayerId === layer.id ? 'ring-2 ring-[var(--accent)] ring-offset-1' : ''}`}
+                  style={{
+                    left: layer.x * scale,
+                    top: layer.y * scale,
+                    width: layer.width * scale,
+                    height: layer.height * scale,
+                    opacity: layer.opacity / 100,
+                    transform: `rotate(${layer.rotation}deg) scaleX(${layer.scaleX}) scaleY(${layer.scaleY})`,
+                    mixBlendMode: layer.blendMode as any,
+                    filter: filterCss,
+                  }}
+                  onClick={(e) => { e.stopPropagation(); setSelectedLayerId(layer.id); }}
+                >
+                  {/* VFX animation wrapper */}
+                  <div className={`w-full h-full ${animClasses.join(' ')}`}>
+                    {layer.type === 'text' && layer.text && (
+                      <div className="w-full h-full flex items-center justify-center p-2"
+                        style={{
+                          fontFamily: layer.text.fontFamily,
+                          fontSize: layer.text.fontSize * scale,
+                          fontWeight: layer.text.fontWeight,
+                          fontStyle: layer.text.fontStyle,
+                          color: layer.text.color,
+                          textAlign: layer.text.align,
+                          letterSpacing: layer.text.letterSpacing,
+                          lineHeight: layer.text.lineHeight,
+                          textDecoration: layer.text.textDecoration,
+                          WebkitTextStroke: layer.text.stroke ? `${layer.text.stroke.width}px ${layer.text.stroke.color}` : undefined,
+                          textShadow: layer.text.shadow ? `${layer.text.shadow.x}px ${layer.text.shadow.y}px ${layer.text.shadow.blur}px ${layer.text.shadow.color}` : undefined,
+                        }}>
+                        {layer.text.content}
+                      </div>
+                    )}
+                    {layer.type === 'shape' && layer.shape && (
+                      <div className="w-full h-full" style={{
+                        background: layer.shape.fill,
+                        borderRadius: layer.shape.type === 'ellipse' ? '50%' : layer.shape.cornerRadius ? `${layer.shape.cornerRadius}px` : undefined,
+                        border: layer.shape.stroke ? `${layer.shape.stroke.width}px solid ${layer.shape.stroke.color}` : undefined,
+                      }} />
+                    )}
+                    {layer.type === 'image' && layer.src && (
+                      <img src={layer.src} className="w-full h-full object-contain" alt="" draggable={false} />
+                    )}
+
+                    {/* Overlay effects */}
+                    {overlays.map(o => {
+                      if (o.type === 'vignette') {
+                        return <div key={o.type} className="absolute inset-0 pointer-events-none"
+                          style={{ background: `radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,${o.intensity / 100 * 0.75}) 100%)` }} />;
+                      }
+                      if (o.type === 'grain' || o.type === 'noise') {
+                        return <div key={o.type} className="absolute inset-0 pointer-events-none mix-blend-overlay"
+                          style={{ backgroundImage: GRAIN_SVG, backgroundSize: '120px 120px', opacity: o.intensity / 100 * 0.8 }} />;
+                      }
+                      return null;
+                    })}
                   </div>
-                )}
-                {layer.type === 'shape' && layer.shape && (
-                  <div className="w-full h-full" style={{
-                    background: layer.shape.fill,
-                    borderRadius: layer.shape.type === 'ellipse' ? '50%' : layer.shape.cornerRadius ? `${layer.shape.cornerRadius}px` : undefined,
-                    border: layer.shape.stroke ? `${layer.shape.stroke.width}px solid ${layer.shape.stroke.color}` : undefined,
-                  }} />
-                )}
-                {layer.type === 'image' && layer.src && (
-                  <img src={layer.src} className="w-full h-full object-contain" alt="" draggable={false} />
-                )}
-              </div>
-            ))}
+                </div>
+              );
+            })}
 
             {/* Empty state */}
             {layers.length === 0 && (
@@ -185,24 +215,24 @@ export default function CanvasArea() {
             max="500"
             value={zoom}
             onChange={(e) => setZoom(Number(e.target.value))}
-            className="slider w-24"
+            className="slider w-20 sm:w-24"
           />
           <button className="tool-btn w-7 h-7" onClick={() => setZoom(zoom + 10)}>
             <ZoomIn size={14} />
           </button>
           <span className="text-[11px] text-gray-500 w-10 text-center">{Math.round(zoom)}%</span>
-          <div className="w-px h-4 mx-1" style={{ background: 'var(--border)' }} />
-          <button className="tool-btn w-7 h-7" onClick={() => { setZoom(100); setPanOffset({ x: 0, y: 0 }); }}>
+          <div className="w-px h-4 mx-1 hidden sm:block" style={{ background: 'var(--border)' }} />
+          <button className="tool-btn w-7 h-7 hidden sm:flex" onClick={() => { setZoom(100); setPanOffset({ x: 0, y: 0 }); }}>
             <Maximize size={14} />
           </button>
-          <button className="tool-btn w-7 h-7" onClick={() => setZoom(100)}>
+          <button className="tool-btn w-7 h-7 hidden sm:flex" onClick={() => setZoom(100)}>
             <RotateCcw size={14} />
           </button>
         </div>
 
         <div className="flex items-center gap-2 text-[11px] text-gray-500">
-          <span>{projW}×{projH}</span>
-          <span>•</span>
+          <span className="hidden sm:inline">{projW}×{projH}</span>
+          <span className="hidden sm:inline">•</span>
           <span>{project?.fps || 30} FPS</span>
           <span>•</span>
           <span>Layer {layers.findIndex(l => l.id === selectedLayerId) + 1 || '—'}/{layers.length}</span>

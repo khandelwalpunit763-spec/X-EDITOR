@@ -1,6 +1,6 @@
 import { useStore } from '../../store/useStore';
-import { 
-  MousePointer2, Move, Crop, Maximize, Paintbrush, Eraser, Square, Type, 
+import {
+  MousePointer2, Move, Crop, Maximize, Paintbrush, Eraser, Square, Type,
   Pen, Copy, Droplets, Scissors, Wand2, Pipette, Hand, ZoomIn,
   ImageMinus, Sparkles
 } from 'lucide-react';
@@ -39,32 +39,49 @@ const tools: (ToolItem | 'divider')[] = [
   { id: 'zoom', icon: <ZoomIn size={18} />, label: 'Zoom', shortcut: 'Z' },
 ];
 
-export default function LeftToolbar() {
+export default function LeftToolbar({ horizontal = false }: { horizontal?: boolean }) {
   const { activeTool, setActiveTool, setShowAIModal } = useStore();
+
+  const renderButton = (tool: ToolItem) => (
+    <button
+      key={tool.id}
+      className={`tool-btn ${activeTool === tool.id ? 'active' : ''}`}
+      onClick={() => setActiveTool(tool.id)}
+      title={tool.label}
+    >
+      {tool.icon}
+      {!horizontal && (
+        <div className="tooltip">
+          {tool.label}{tool.shortcut ? ` (${tool.shortcut})` : ''}
+        </div>
+      )}
+    </button>
+  );
+
+  const renderDivider = (i: number) =>
+    horizontal
+      ? <div key={`d-${i}`} className="w-px h-6 self-center flex-shrink-0" style={{ background: 'var(--border)' }} />
+      : <div key={`d-${i}`} className="w-6 h-px my-1" style={{ background: 'var(--border)' }} />;
+
+  if (horizontal) {
+    return (
+      <div className="w-full flex-shrink-0 flex items-center gap-0.5 px-2 py-1 overflow-x-auto border-t no-scrollbar"
+        style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border)' }}>
+        {tools.map((tool, i) => tool === 'divider' ? renderDivider(i) : renderButton(tool))}
+        <button className="tool-btn" onClick={() => setShowAIModal(true)} title="AI Tools">
+          <Sparkles size={18} />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="w-12 flex-shrink-0 flex flex-col items-center py-2 gap-0.5 border-r overflow-y-auto"
       style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border)' }}>
-      {tools.map((tool, i) => {
-        if (tool === 'divider') {
-          return <div key={`d-${i}`} className="w-6 h-px my-1" style={{ background: 'var(--border)' }} />;
-        }
-        return (
-          <button
-            key={tool.id}
-            className={`tool-btn ${activeTool === tool.id ? 'active' : ''}`}
-            onClick={() => setActiveTool(tool.id)}
-          >
-            {tool.icon}
-            <div className="tooltip">
-              {tool.label}{tool.shortcut ? ` (${tool.shortcut})` : ''}
-            </div>
-          </button>
-        );
-      })}
-      
+      {tools.map((tool, i) => tool === 'divider' ? renderDivider(i) : renderButton(tool))}
+
       <div className="w-6 h-px my-1" style={{ background: 'var(--border)' }} />
-      
+
       {/* AI Tools quick access */}
       <button className="tool-btn" onClick={() => setShowAIModal(true)}>
         <Sparkles size={18} />

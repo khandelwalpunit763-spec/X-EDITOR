@@ -25,7 +25,7 @@ export default function HelpModal() {
             <button key={i} className="w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all hover:bg-[var(--bg-hover)]"
               style={{ background: 'var(--bg-tertiary)' }}>
               <div className="w-10 h-10 rounded-lg flex items-center justify-center"
-                style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8' }}>
+                style={{ background: 'rgba(0, 217, 192, 0.15)', color: '#2ee6cf' }}>
                 {item.icon}
               </div>
               <div className="flex-1">

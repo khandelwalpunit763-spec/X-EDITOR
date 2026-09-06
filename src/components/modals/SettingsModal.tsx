@@ -87,7 +87,7 @@ export default function SettingsModal() {
                 <div>
                   <label className="text-xs font-medium text-gray-400 block mb-2">Theme</label>
                   <div className="grid grid-cols-2 gap-2">
-                    <button className="p-4 rounded-xl border-2 border-indigo-500 text-center">
+                    <button className="p-4 rounded-xl border-2 border-[var(--accent)] text-center">
                       <div className="w-full h-8 rounded mb-2" style={{ background: '#0f0f14' }} />
                       <span className="text-xs">Dark</span>
                     </button>
@@ -100,7 +100,7 @@ export default function SettingsModal() {
                 <div>
                   <label className="text-xs font-medium text-gray-400 block mb-2">Accent Color</label>
                   <div className="flex gap-2">
-                    {['#6366f1', '#8b5cf6', '#3b82f6', '#06b6d4', '#22c55e', '#f97316', '#ef4444', '#ec4899'].map(color => (
+                    {['#00d9c0', '#14b8a6', '#3b82f6', '#06b6d4', '#22c55e', '#f97316', '#ef4444', '#ec4899'].map(color => (
                       <button key={color} className="w-8 h-8 rounded-full border-2 border-transparent hover:border-white/30 transition-all"
                         style={{ background: color }} />
                     ))}
@@ -145,7 +145,7 @@ export default function SettingsModal() {
                     <span className="text-xs text-gray-400">3.5 GB / 10 GB</span>
                   </div>
                   <div className="w-full h-3 rounded-full bg-gray-800">
-                    <div className="h-full rounded-full bg-indigo-600" style={{ width: '35%' }} />
+                    <div className="h-full rounded-full bg-[var(--accent)]" style={{ width: '35%' }} />
                   </div>
                 </div>
                 <div className="space-y-2">

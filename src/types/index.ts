@@ -1,4 +1,4 @@
-export type AppView = 'landing' | 'dashboard' | 'editor' | 'photo-editor';
+export type AppView = 'landing' | 'dashboard' | 'editor' | 'photo-editor' | 'compress';
 
 export type EditorMode = 'photo' | 'video';
 
@@ -112,7 +112,11 @@ export type FilterType =
   | 'temperature' | 'tint' | 'highlights' | 'shadows' | 'whites' | 'blacks'
   | 'hue' | 'blur' | 'gaussianBlur' | 'motionBlur' | 'sharpen'
   | 'grayscale' | 'vintage' | 'cinematic' | 'warm' | 'cool'
-  | 'blackAndWhite' | 'vignette' | 'noise' | 'glow' | 'grain';
+  | 'blackAndWhite' | 'vignette' | 'noise' | 'glow' | 'grain'
+  // CapCut-style animated VFX
+  | 'glitch' | 'shake' | 'kenburns' | 'threeDZoom' | 'flash'
+  | 'zoomblur' | 'rgbsplit' | 'chromaKey' | 'pixelate'
+  | 'film' | 'hdr' | 'tealOrange';
 
 export interface Keyframe {
   id: string;

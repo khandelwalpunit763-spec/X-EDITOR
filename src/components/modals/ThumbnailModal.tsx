@@ -19,7 +19,7 @@ const templates = [
   { id: '5', name: 'Tutorial', gradient: 'linear-gradient(135deg, #2193b0, #6dd5ed)' },
   { id: '6', name: 'Minimalist', gradient: 'linear-gradient(135deg, #2c3e50, #4ca1af)' },
   { id: '7', name: 'Cinematic', gradient: 'linear-gradient(135deg, #141e30, #243b55)' },
-  { id: '8', name: 'Neon', gradient: 'linear-gradient(135deg, #6366f1, #ec4899)' },
+  { id: '8', name: 'Neon', gradient: 'linear-gradient(135deg, #00d9c0, #ec4899)' },
 ];
 
 export default function ThumbnailModal() {
@@ -60,7 +60,7 @@ export default function ThumbnailModal() {
                   key={preset.id}
                   className={`p-3 rounded-xl text-left transition-all ${
                     selectedPreset === preset.id
-                      ? 'ring-2 ring-indigo-500'
+                      ? 'ring-2 ring-[var(--accent)]'
                       : ''
                   }`}
                   style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}
@@ -84,7 +84,7 @@ export default function ThumbnailModal() {
                 <button
                   key={template.id}
                   className={`group rounded-xl overflow-hidden transition-all hover:scale-[1.03] ${
-                    selectedTemplate === template.id ? 'ring-2 ring-indigo-500' : ''
+                    selectedTemplate === template.id ? 'ring-2 ring-[var(--accent)]' : ''
                   }`}
                   style={{ border: '1px solid var(--border)' }}
                   onClick={() => setSelectedTemplate(template.id)}
@@ -116,7 +116,7 @@ export default function ThumbnailModal() {
               ].map((tool, i) => (
                 <button key={i} className="flex flex-col items-center gap-1.5 p-3 rounded-lg transition-all hover:bg-[var(--bg-hover)]"
                   style={{ background: 'var(--bg-tertiary)' }}>
-                  <div className="text-indigo-400">{tool.icon}</div>
+                  <div className="text-[var(--accent)]">{tool.icon}</div>
                   <span className="text-[10px] text-gray-400">{tool.name}</span>
                 </button>
               ))}

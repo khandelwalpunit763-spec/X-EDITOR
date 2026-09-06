@@ -4,18 +4,18 @@ import { Pipette } from 'lucide-react';
 
 const presetColors = [
   '#ffffff', '#000000', '#ef4444', '#f97316', '#eab308', '#22c55e',
-  '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#ec4899', '#14b8a6',
+  '#3b82f6', '#00d9c0', '#14b8a6', '#00b8a3', '#ec4899', '#14b8a6',
   '#64748b', '#78716c', '#dc2626', '#ea580c', '#ca8a04', '#16a34a',
-  '#2563eb', '#4f46e5', '#7c3aed', '#9333ea', '#db2777', '#0d9488',
+  '#2563eb', '#0891b2', '#7c3aed', '#9333ea', '#db2777', '#0d9488',
 ];
 
 export default function ColorPanel() {
   const { selectedLayerId, layers, updateLayer } = useStore();
   const layer = layers.find(l => l.id === selectedLayerId);
   const [activeColor, setActiveColor] = useState<'fill' | 'stroke'>('fill');
-  const [hexInput, setHexInput] = useState('#6366f1');
+  const [hexInput, setHexInput] = useState('#00d9c0');
 
-  const currentColor = layer?.type === 'shape' ? layer.shape?.fill : layer?.type === 'text' ? layer.text?.color : '#6366f1';
+  const currentColor = layer?.type === 'shape' ? layer.shape?.fill : layer?.type === 'text' ? layer.text?.color : '#00d9c0';
 
   const applyColor = (color: string) => {
     setHexInput(color);
@@ -43,7 +43,7 @@ export default function ColorPanel() {
 
         {/* Large color preview */}
         <div className="w-full h-20 rounded-lg mb-3 border cursor-pointer relative overflow-hidden"
-          style={{ background: currentColor || '#6366f1', borderColor: 'var(--border)' }}>
+          style={{ background: currentColor || '#00d9c0', borderColor: 'var(--border)' }}>
           <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black/30">
             <Pipette size={20} />
           </div>
@@ -71,7 +71,7 @@ export default function ColorPanel() {
           </div>
           <input
             type="color"
-            value={currentColor || '#6366f1'}
+            value={currentColor || '#00d9c0'}
             onChange={e => applyColor(e.target.value)}
             className="w-8 h-8 rounded cursor-pointer border-0"
           />
@@ -117,7 +117,7 @@ export default function ColorPanel() {
       <div>
         <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">Recent</div>
         <div className="flex gap-1.5">
-          {['#6366f1', '#ef4444', '#22c55e', '#eab308', '#ffffff'].map(color => (
+          {['#00d9c0', '#ef4444', '#22c55e', '#eab308', '#ffffff'].map(color => (
             <button
               key={color}
               className="w-6 h-6 rounded border cursor-pointer"

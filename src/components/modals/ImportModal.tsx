@@ -88,7 +88,7 @@ export default function ImportModal() {
           <div
             className={`border-2 border-dashed rounded-xl p-10 text-center transition-all cursor-pointer ${
               isDragOver 
-                ? 'border-indigo-500 bg-indigo-500/10' 
+                ? 'border-[var(--accent)] bg-[var(--accent)]/10' 
                 : 'border-gray-700 hover:border-gray-600 hover:bg-[var(--bg-tertiary)]'
             }`}
             onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}

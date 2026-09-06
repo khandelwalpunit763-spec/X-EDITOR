@@ -2,8 +2,8 @@ import { useStore } from '../../store/useStore';
 import { ArrowRight } from 'lucide-react';
 
 const transitions = [
-  { id: 'fade', name: 'Fade', color: '#6366f1' },
-  { id: 'dissolve', name: 'Dissolve', color: '#8b5cf6' },
+  { id: 'fade', name: 'Fade', color: '#00d9c0' },
+  { id: 'dissolve', name: 'Dissolve', color: '#14b8a6' },
   { id: 'slide', name: 'Slide', color: '#3b82f6' },
   { id: 'wipe', name: 'Wipe', color: '#06b6d4' },
   { id: 'zoom', name: 'Zoom', color: '#22c55e' },
@@ -12,7 +12,7 @@ const transitions = [
   { id: 'blur', name: 'Blur', color: '#ef4444' },
   { id: 'glitch', name: 'Glitch', color: '#ec4899' },
   { id: 'flash', name: 'Flash', color: '#f43f5e' },
-  { id: 'lightLeak', name: 'Light Leak', color: '#a855f7' },
+  { id: 'lightLeak', name: 'Light Leak', color: '#00b8a3' },
 ];
 
 export default function TransitionsPanel() {

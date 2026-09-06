@@ -14,7 +14,7 @@ const destinations = [
   { id: 'instagram', label: 'Instagram', icon: <Camera size={18} />, color: '#e4405f', desc: 'Reel / Post' },
   { id: 'tiktok', label: 'TikTok', icon: <Music2 size={18} />, color: '#000', desc: 'Upload as video' },
   { id: 'download', label: 'Direct Download', icon: <Download size={18} />, color: '#22c55e', desc: 'Save to device' },
-  { id: 'link', label: 'Copy Link', icon: <Link2 size={18} />, color: '#6366f1', desc: 'Shareable link + QR' },
+  { id: 'link', label: 'Copy Link', icon: <Link2 size={18} />, color: '#00d9c0', desc: 'Shareable link + QR' },
 ]
 
 export default function ShareUploadModal({ onClose, projectName, exportUrl }: Props) {
@@ -44,7 +44,7 @@ export default function ShareUploadModal({ onClose, projectName, exportUrl }: Pr
         style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
         <div className="flex items-center justify-between p-5 border-b" style={{ borderColor: 'var(--border)' }}>
           <div>
-            <h2 className="text-base font-bold flex items-center gap-2"><Upload size={18} className="text-indigo-400" /> Export Ready!</h2>
+            <h2 className="text-base font-bold flex items-center gap-2"><Upload size={18} className="text-[var(--accent)]" /> Export Ready!</h2>
             <p className="text-xs text-gray-500 mt-0.5">{projectName} • Kaha upload karna hai choose karein</p>
           </div>
           <button onClick={onClose} className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-[var(--bg-hover)] text-gray-500"><X size={16} /></button>
@@ -55,7 +55,7 @@ export default function ShareUploadModal({ onClose, projectName, exportUrl }: Pr
             <button
               key={d.id}
               onClick={() => handleSelect(d.id)}
-              className={`p-4 rounded-xl text-left border transition-all hover:scale-[1.02] ${selected === d.id ? 'ring-2 ring-indigo-500 border-indigo-500' : 'hover:border-[var(--border-light)]'}`}
+              className={`p-4 rounded-xl text-left border transition-all hover:scale-[1.02] ${selected === d.id ? 'ring-2 ring-[var(--accent)] border-[var(--accent)]' : 'hover:border-[var(--border-light)]'}`}
               style={{ background: 'var(--bg-tertiary)', borderColor: 'var(--border)' }}
             >
               <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-2" style={{ background: `${d.color}18`, color: d.color, border: `1px solid ${d.color}30` }}>
@@ -63,7 +63,7 @@ export default function ShareUploadModal({ onClose, projectName, exportUrl }: Pr
               </div>
               <div className="text-xs font-semibold">{d.label}</div>
               <div className="text-[11px] text-gray-500 leading-tight mt-0.5">{d.desc}</div>
-              {selected === d.id && <div className="mt-2 text-[11px] text-indigo-400 flex items-center gap-1"><Check size={12} /> Selected</div>}
+              {selected === d.id && <div className="mt-2 text-[11px] text-[var(--accent)] flex items-center gap-1"><Check size={12} /> Selected</div>}
             </button>
           ))}
         </div>
@@ -74,10 +74,10 @@ export default function ShareUploadModal({ onClose, projectName, exportUrl }: Pr
               <QRCodeSVG value={shareLink} size={80} />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-medium flex items-center gap-1"><Sparkles size={12} className="text-indigo-400" /> Share Link + QR</div>
+              <div className="text-xs font-medium flex items-center gap-1"><Sparkles size={12} className="text-[var(--accent)]" /> Share Link + QR</div>
               <div className="text-[11px] text-gray-500 truncate mt-1 bg-[var(--bg-primary)] px-2 py-1 rounded border border-[var(--border)]">{shareLink}</div>
               <button onClick={() => { navigator.clipboard.writeText(shareLink); setCopied(true); setTimeout(()=>setCopied(false),2000)}}
-                className="mt-2 text-xs px-3 py-1 rounded-full bg-indigo-600 text-white flex items-center gap-1">
+                className="mt-2 text-xs px-3 py-1 rounded-full bg-[var(--accent)] text-white flex items-center gap-1">
                 {copied ? <><Check size={12} /> Copied!</> : <><Link2 size={12} /> Copy Link</>}
               </button>
             </div>

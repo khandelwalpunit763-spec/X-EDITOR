@@ -2,19 +2,20 @@
 
 @layer base {
   :root {
-    --accent: #6366f1;
-    --accent-hover: #818cf8;
-    --accent-muted: #4f46e5;
-    --bg-primary: #0f0f14;
-    --bg-secondary: #16161d;
-    --bg-tertiary: #1e1e28;
-    --bg-elevated: #252532;
-    --bg-hover: #2a2a3a;
-    --text-primary: #e8e8ed;
+    /* CapCut-inspired dark theme */
+    --accent: #00d9c0;
+    --accent-hover: #2ee6cf;
+    --accent-muted: #00b8a3;
+    --bg-primary: #0a0a0b;
+    --bg-secondary: #121214;
+    --bg-tertiary: #1a1a1d;
+    --bg-elevated: #222226;
+    --bg-hover: #2a2a2f;
+    --text-primary: #f2f2f4;
     --text-secondary: #9ca3af;
     --text-muted: #6b7280;
-    --border: #2d2d3d;
-    --border-light: #3d3d52;
+    --border: #26262b;
+    --border-light: #36363d;
     --success: #22c55e;
     --warning: #eab308;
     --danger: #ef4444;
@@ -44,7 +45,7 @@
     background: var(--border-light);
   }
 
-  body {
+  html, body {
     margin: 0;
     padding: 0;
     background: var(--bg-primary);
@@ -53,24 +54,26 @@
     overflow: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    height: 100%;
   }
 
   #root {
     width: 100vw;
-    hash: 100vh;
+    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
   }
 }
 
 @layer components {
   .glass {
-    background: rgba(30, 30, 40, 0.8);
+    background: rgba(22, 22, 25, 0.82);
     backdrop-filter: blur(20px);
     border: 1px solid var(--border);
   }
 
   .glass-light {
-    background: rgba(40, 40, 55, 0.6);
+    background: rgba(40, 40, 45, 0.6);
     backdrop-filter: blur(12px);
     border: 1px solid var(--border);
   }
@@ -112,13 +115,13 @@
 
   .btn-primary {
     background: var(--accent);
-    color: white;
+    color: #06110f;
   }
 
   .btn-primary:hover {
     background: var(--accent-hover);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 217, 192, 0.25);
   }
 
   .btn-secondary {
@@ -162,6 +165,7 @@
     cursor: pointer;
     color: var(--text-secondary);
     position: relative;
+    flex-shrink: 0;
   }
 
   .tool-btn:hover {
@@ -171,8 +175,8 @@
 
   .tool-btn.active {
     background: var(--accent);
-    color: white;
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    color: #06110f;
+    box-shadow: 0 2px 8px rgba(0, 217, 192, 0.25);
   }
 
   .input {
@@ -188,7 +192,7 @@
 
   .input:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+    box-shadow: 0 0 0 2px rgba(0, 217, 192, 0.15);
   }
 
   .slider {
@@ -209,8 +213,8 @@
     border-radius: 50%;
     background: var(--accent);
     cursor: pointer;
-    border: 2px solid white;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    border: 2px solid #06110f;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
   }
 
   .slider::-moz-range-thumb {
@@ -219,8 +223,8 @@
     border-radius: 50%;
     background: var(--accent);
     cursor: pointer;
-    border: 2px solid white;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    border: 2px solid #06110f;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
   }
 
   .tooltip {
@@ -252,7 +256,7 @@
     border-radius: 8px;
     padding: 4px;
     min-width: 180px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
     z-index: 10000;
   }
 
@@ -288,7 +292,7 @@
   }
 
   .badge-accent {
-    background: rgba(99, 102, 241, 0.15);
+    background: rgba(0, 217, 192, 0.14);
     color: var(--accent-hover);
   }
 
@@ -329,6 +333,96 @@
     user-select: none;
     -webkit-user-select: none;
   }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ============ CapCut-style VFX animations ============ */
+
+/* Glitch — clip-path slicing + RGB tint jitter */
+@keyframes vfxGlitch {
+  0%   { clip-path: inset(0 0 0 0); transform: translate(0, 0); filter: none; }
+  8%   { clip-path: inset(12% 0 60% 0); transform: translate(-3px, 1px); filter: hue-rotate(90deg) saturate(3); }
+  16%  { clip-path: inset(55% 0 10% 0); transform: translate(3px, -1px); filter: hue-rotate(-90deg) saturate(3); }
+  24%  { clip-path: inset(30% 0 45% 0); transform: translate(-2px, 2px); filter: hue-rotate(40deg); }
+  32%  { clip-path: inset(0 0 0 0); transform: translate(0, 0); filter: none; }
+  48%  { clip-path: inset(70% 0 5% 0); transform: translate(2px, 0); filter: hue-rotate(-60deg) saturate(2); }
+  60%  { clip-path: inset(5% 0 75% 0); transform: translate(-2px, -1px); filter: hue-rotate(60deg) saturate(2); }
+  70%  { clip-path: inset(0 0 0 0); transform: translate(0, 0); filter: none; }
+  100% { clip-path: inset(0 0 0 0); transform: translate(0, 0); filter: none; }
+}
+
+.vfx-glitch {
+  animation: vfxGlitch 1.6s infinite steps(1, end);
+}
+
+/* Shake — handheld camera feel */
+@keyframes vfxShake {
+  0%, 100% { transform: translate(0, 0) rotate(0); }
+  10% { transform: translate(-2px, 1px) rotate(-0.4deg); }
+  20% { transform: translate(2px, -1px) rotate(0.4deg); }
+  30% { transform: translate(-2px, -1px) rotate(-0.3deg); }
+  40% { transform: translate(2px, 1px) rotate(0.3deg); }
+  50% { transform: translate(-1px, 2px) rotate(-0.5deg); }
+  60% { transform: translate(1px, -2px) rotate(0.5deg); }
+  70% { transform: translate(-2px, 1px) rotate(-0.4deg); }
+  80% { transform: translate(2px, 1px) rotate(0.4deg); }
+  90% { transform: translate(-1px, -1px) rotate(-0.2deg); }
+}
+
+.vfx-shake {
+  animation: vfxShake 0.5s infinite linear;
+}
+
+/* 3D Zoom (Ken Burns) — slow push-in */
+@keyframes vfxKenBurns {
+  0%   { transform: scale(1) translate(0, 0); }
+  100% { transform: scale(1.18) translate(1.5%, -1.5%); }
+}
+
+.vfx-kenburns {
+  animation: vfxKenBurns 8s ease-in-out infinite alternate;
+}
+
+/* Flash — rapid opacity flicker */
+@keyframes vfxFlash {
+  0%, 100% { opacity: 1; }
+  25% { opacity: 0.25; }
+  50% { opacity: 1; }
+  75% { opacity: 0.4; }
+}
+
+.vfx-flash {
+  animation: vfxFlash 0.9s infinite steps(1, end);
+}
+
+/* Zoom Blur — pulsing blur */
+@keyframes vfxZoomBlur {
+  0%, 100% { filter: blur(0px); }
+  50% { filter: blur(4px); }
+}
+
+.vfx-zoomblur {
+  animation: vfxZoomBlur 1.4s ease-in-out infinite;
+}
+
+/* RGB Split — color channel drift */
+@keyframes vfxRgbSplit {
+  0%, 100% { filter: none; }
+  25% { filter: saturate(2.4) hue-rotate(-30deg) contrast(1.2); }
+  50% { filter: saturate(2.4) hue-rotate(30deg) contrast(1.2); }
+  75% { filter: saturate(2) hue-rotate(-15deg); }
+}
+
+.vfx-rgbsplit {
+  animation: vfxRgbSplit 1.2s infinite steps(1, end);
 }
 
 @keyframes fadeIn {

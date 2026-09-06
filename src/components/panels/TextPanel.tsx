@@ -78,7 +78,7 @@ export default function TextPanel() {
                 <button
                   key={font}
                   className={`w-full text-left px-3 py-1.5 text-xs hover:bg-[var(--bg-hover)] transition-colors ${
-                    layer.text?.fontFamily === font ? 'bg-[var(--accent)]/20 text-indigo-300' : ''
+                    layer.text?.fontFamily === font ? 'bg-[var(--accent)]/20 text-[var(--accent-hover)]' : ''
                   }`}
                   style={{ fontFamily: font }}
                   onClick={() => updateLayer(layer.id, { text: { ...layer.text!, fontFamily: font } })}
@@ -191,7 +191,7 @@ export default function TextPanel() {
               {/* Glow */}
               <div className="flex items-center gap-2">
                 <input type="checkbox" checked={!!layer.text.glow}
-                  onChange={e => updateLayer(layer.id, { text: { ...layer.text!, glow: e.target.checked ? { color: '#6366f1', radius: 10 } : undefined } })}
+                  onChange={e => updateLayer(layer.id, { text: { ...layer.text!, glow: e.target.checked ? { color: '#00d9c0', radius: 10 } : undefined } })}
                   className="rounded" />
                 <span className="text-xs">Glow</span>
               </div>
