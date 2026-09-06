@@ -26,8 +26,25 @@ function App() {
 
   const { initialize, isLoading: authLoading } = useAuthStore();
   const [showRestorePrompt, setShowRestorePrompt] = useState(false);
+  const [oauthError, setOauthError] = useState('');
   
   const openLogin = () => setShowLoginModal(true);
+
+  // Handle OAuth error redirect (e.g. Supabase "Unable to exchange external code")
+  useEffect(() => {
+    const hash = window.location.hash
+    if (hash && hash.includes('error_description')) {
+      try {
+        const params = new URLSearchParams(hash.slice(1))
+        const desc = params.get('error_description')
+        setOauthError(desc ? decodeURIComponent(desc).replace(/\+/g, ' ') : 'Sign-in failed. Please try again.')
+      } catch {
+        setOauthError('Sign-in failed. Please try again.')
+      }
+      // Clean the URL so refresh doesn't re-trigger
+      window.history.replaceState(null, '', window.location.pathname + window.location.search)
+    }
+  }, [])
   
   // Init auth
   useEffect(() => { initialize() }, [initialize])
@@ -146,6 +163,22 @@ function App() {
           <span className="text-xs">💾 Unsaved draft mila hai! Restore karna hai?</span>
           <button onClick={handleRestore} className="btn btn-primary text-xs px-3 py-1">Restore</button>
           <button onClick={handleDiscard} className="btn btn-ghost text-xs px-3 py-1">Discard</button>
+        </div>
+      )}
+
+      {oauthError && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[70] w-[calc(100%-2rem)] max-w-md px-4 py-3 rounded-xl shadow-2xl animate-slide-up"
+          style={{ background: 'var(--bg-secondary)', border: '1px solid rgba(239,68,68,0.35)' }}>
+          <div className="flex items-start gap-3">
+            <span className="text-lg leading-none mt-0.5">⚠️</span>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold text-white">Google sign-in failed</div>
+              <div className="text-xs text-gray-400 mt-0.5 leading-relaxed break-words">
+                Google login abhi fully configured nahi hai ({oauthError}). Demo login use karein — koi bhi email daalo, turant chalega.
+              </div>
+            </div>
+            <button onClick={() => setOauthError('')} className="text-gray-500 hover:text-white text-lg leading-none">×</button>
+          </div>
         </div>
       )}
     </div>
