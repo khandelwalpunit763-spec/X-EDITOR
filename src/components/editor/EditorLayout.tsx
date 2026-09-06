@@ -132,7 +132,8 @@ export default function EditorLayout({ onLogin }: { onLogin?: () => void }) {
           {!isAuthenticated && (
             <div className="absolute bottom-0 left-0 right-0 h-[160px] flex items-center justify-center pointer-events-none" style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(2px)' }}>
               <div className="pointer-events-auto bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl px-4 py-2 text-xs flex items-center gap-2">
-                Timeline edit karne ke liye <button onClick={onLogin} className="px-2 py-1 rounded bg-[var(--accent)] text-black text-xs font-semibold">Login karein</button>
+                <span className="text-gray-300">Sign in to edit the timeline</span>
+                <button onClick={onLogin} className="px-2.5 py-1 rounded bg-[var(--accent)] text-black text-xs font-semibold">Sign in</button>
               </div>
             </div>
           )}

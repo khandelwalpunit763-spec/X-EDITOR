@@ -17,16 +17,17 @@ import AIModal from './components/modals/AIModal';
 import ThumbnailModal from './components/modals/ThumbnailModal';
 import ShareUploadModal from './components/modals/ShareUploadModal';
 import LoginModal from './components/auth/LoginModal';
-import { ViewOnlyOverlay } from './components/auth/AuthGuard';
 
 function App() {
   const { view, showNewProjectModal, showExportModal, showImportModal, 
     showSettingsModal, showHelpModal, showShortcutsModal, showWatermarkModal,
-    showAIModal, showThumbnailModal, showShareModal, undo, redo, saveProject, setActiveTool, setShowShareModal, project } = useStore();
+    showAIModal, showThumbnailModal, showShareModal, showLoginModal, setShowLoginModal,
+    undo, redo, saveProject, setActiveTool, setShowShareModal, project } = useStore();
 
   const { initialize, isLoading: authLoading } = useAuthStore();
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRestorePrompt, setShowRestorePrompt] = useState(false);
+  
+  const openLogin = () => setShowLoginModal(true);
   
   // Init auth
   useEffect(() => { initialize() }, [initialize])
@@ -122,9 +123,9 @@ function App() {
 
   return (
     <div className="w-full h-full overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)] relative">
-      {view === 'landing' && <LandingPage onLogin={() => setShowLoginModal(true)} />}
-      {view === 'dashboard' && <Dashboard onLogin={() => setShowLoginModal(true)} />}
-      {view === 'editor' && <EditorLayout onLogin={() => setShowLoginModal(true)} />}
+      {view === 'landing' && <LandingPage onLogin={openLogin} />}
+      {view === 'dashboard' && <Dashboard onLogin={openLogin} />}
+      {view === 'editor' && <EditorLayout onLogin={openLogin} />}
       {view === 'compress' && <Compressor />}
 
       {showNewProjectModal && <NewProjectModal />}
@@ -137,7 +138,7 @@ function App() {
       {showAIModal && <AIModal />}
       {showThumbnailModal && <ThumbnailModal />}
       {showShareModal && <ShareUploadModal projectName={project?.name || 'Untitled'} onClose={() => setShowShareModal(false)} />}
-      {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} />}
+      {showLoginModal && <LoginModal />}
 
       {showRestorePrompt && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl"

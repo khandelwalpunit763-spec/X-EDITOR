@@ -12,6 +12,7 @@ interface AuthState {
   // Actions
   initialize: () => Promise<void>
   signInWithGoogle: () => Promise<void>
+  signInWithEmail: (email: string) => Promise<void>
   signOut: () => Promise<void>
   setMockUser: (email: string, name: string) => void
 }
@@ -85,11 +86,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   signInWithGoogle: async () => {
     if (!canUseSupabase()) {
-      // Mock mode - simulate Google login with prompt
-      const email = prompt('Mock Google Login - Apna Gmail daalo (Supabase connect nahi hai):', 'demo@gmail.com')
-      if (!email) return
-      const name = email.split('@')[0]
-      get().setMockUser(email, name)
+      // Mock mode — the UI (LoginModal) handles the demo sign-in flow.
       return
     }
 
@@ -102,9 +99,27 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     })
     if (error) {
       console.error('Google login error', error)
-      alert('Login failed: ' + error.message)
       throw error
     }
+  },
+
+  signInWithEmail: async (email: string) => {
+    const clean = email.trim()
+    if (!clean) return
+
+    if (!canUseSupabase()) {
+      // Demo mode — create a local user (no backend needed)
+      const name = clean.split('@')[0].replace(/[^a-zA-Z0-9]/g, ' ').trim() || 'Creator'
+      get().setMockUser(clean, name)
+      return
+    }
+
+    // Real mode — magic link via Supabase
+    const { error } = await supabase.auth.signInWithOtp({
+      email: clean,
+      options: { emailRedirectTo: window.location.origin }
+    })
+    if (error) throw error
   },
 
   signOut: async () => {

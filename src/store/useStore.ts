@@ -27,6 +27,7 @@ interface AppState {
   showAIModal: boolean;
   showThumbnailModal: boolean;
   showShareModal: boolean;
+  showLoginModal: boolean;
 
   // Project
   project: Project | null;
@@ -131,6 +132,7 @@ interface AppState {
   setShowAIModal: (show: boolean) => void;
   setShowThumbnailModal: (show: boolean) => void;
   setShowShareModal: (show: boolean) => void;
+  setShowLoginModal: (show: boolean) => void;
 
   // History actions
   pushHistory: () => void;
@@ -165,6 +167,7 @@ export const useStore = create<AppState>((set, get) => ({
   showAIModal: false,
   showThumbnailModal: false,
   showShareModal: false,
+  showLoginModal: false,
 
   project: null,
   recentProjects: [],
@@ -521,6 +524,7 @@ export const useStore = create<AppState>((set, get) => ({
   setShowAIModal: (show) => set({ showAIModal: show }),
   setShowThumbnailModal: (show) => set({ showThumbnailModal: show }),
   setShowShareModal: (show) => set({ showShareModal: show }),
+  setShowLoginModal: (show) => set({ showLoginModal: show }),
 
   pushHistory: () => {
     const { layers, tracks, history, historyIndex } = get();

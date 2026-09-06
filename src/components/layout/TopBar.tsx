@@ -16,7 +16,8 @@ export default function TopBar() {
     showGuides, setShowGuides, showSafeZones, setShowSafeZones,
     snapToObjects, setSnapToObjects, setZoom
   } = useStore();
-  const { user, isAuthenticated, signOut, signInWithGoogle } = useAuthStore();
+  const { user, isAuthenticated, signOut } = useAuthStore();
+  const { setShowLoginModal } = useStore();
 
   const [showFileMenu, setShowFileMenu] = useState(false);
   const [showViewMenu, setShowViewMenu] = useState(false);
@@ -169,7 +170,7 @@ export default function TopBar() {
             <button className="tool-btn w-7 h-7 hidden sm:flex" onClick={signOut} title="Logout"><LogOut size={14} /></button>
           </div>
         ) : (
-          <button className="btn btn-ghost text-xs h-7 px-2 ml-1" onClick={signInWithGoogle}><LogIn size={14} /> Login</button>
+          <button className="btn btn-ghost text-xs h-7 px-2 ml-1" onClick={() => setShowLoginModal(true)}><LogIn size={14} /> Login</button>
         )}
       </div>
     </div>

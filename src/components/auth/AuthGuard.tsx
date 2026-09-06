@@ -1,5 +1,7 @@
-import { useAuthStore } from '../../store/authStore'
-import { Lock, Eye, LogIn } from 'lucide-react'
+import { useAuthStore } from '../../store/authStore';
+import { useStore } from '../../store/useStore';
+import GoogleButton from './GoogleButton';
+import { Lock, Eye } from 'lucide-react';
 
 interface Props {
   children: React.ReactNode
@@ -26,29 +28,23 @@ export function AuthGuard({ children, fallback }: Props) {
 }
 
 export function ViewOnlyOverlay() {
-  const { signInWithGoogle, isMockMode } = useAuthStore()
+  const { setShowLoginModal } = useStore()
 
   return (
     <div className="absolute inset-0 z-40 flex items-center justify-center p-6 pointer-events-none">
-      <div className="pointer-events-auto max-w-sm w-full rounded-2xl p-6 text-center shadow-2xl"
-        style={{ background: 'rgba(22, 22, 29, 0.95)', border: '1px solid var(--border)', backdropFilter: 'blur(20px)' }}>
-        <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4"
-          style={{ background: 'rgba(0, 217, 192, 0.15)', border: '1px solid rgba(99,102,241,0.3)' }}>
-          <Eye size={22} className="text-[var(--accent)]" />
+      <div className="pointer-events-auto max-w-sm w-full rounded-2xl p-7 text-center shadow-2xl animate-scale-in"
+        style={{ background: 'rgba(20, 20, 24, 0.96)', border: '1px solid var(--border)', backdropFilter: 'blur(20px)' }}>
+        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+          style={{ background: 'linear-gradient(135deg, #00d9c0, #00b8a3)' }}>
+          <Eye size={24} className="text-black" />
         </div>
-        <h3 className="text-sm font-bold mb-1">View-Only Mode</h3>
-        <p className="text-xs text-gray-400 mb-4 leading-relaxed">
-          Aap bina login ke sirf dekh sakte ho. Edit, Save ya Export karne ke liye Gmail se login karein.
-          {isMockMode && <span className="block mt-1 text-[11px] text-amber-400">⚠️ Mock mode - Supabase keys add karne pe original Gmail login hoga</span>}
+        <h3 className="text-base font-bold text-white mb-1">Sign in to start editing</h3>
+        <p className="text-xs text-gray-400 mb-5 leading-relaxed">
+          You're in view-only mode. Sign in to edit, save and export without limits.
         </p>
-        <button
-          onClick={signInWithGoogle}
-          className="w-full btn btn-primary py-2.5 rounded-xl text-sm"
-        >
-          <LogIn size={16} /> Gmail se Login Karein
-        </button>
-        <p className="text-[11px] text-gray-600 mt-3 flex items-center justify-center gap-1">
-          <Lock size={10} /> Secure Google OAuth • No spam
+        <GoogleButton onClick={() => setShowLoginModal(true)} />
+        <p className="text-[11px] text-gray-600 mt-4 flex items-center justify-center gap-1">
+          <Lock size={10} /> Free forever · Secure Google sign-in · No credit card
         </p>
       </div>
     </div>
@@ -57,15 +53,19 @@ export function ViewOnlyOverlay() {
 
 export function ReadOnlyBanner() {
   const { isAuthenticated } = useAuthStore()
+  const { setShowLoginModal } = useStore()
   if (isAuthenticated) return null
   return (
-    <div className="h-7 flex items-center justify-center gap-2 text-[11px] text-amber-300 px-3"
-      style={{ background: 'rgba(245,158,11,0.12)', borderBottom: '1px solid rgba(245,158,11,0.2)' }}>
-      <Eye size={12} /> View-Only — Edit karne ke liye Login karein
-      <button onClick={() => useAuthStore.getState().signInWithGoogle()}
-        className="ml-2 px-2 py-0.5 rounded bg-amber-500 text-black text-[11px] font-semibold hover:bg-amber-400">
-        Login
+    <div className="h-7 flex items-center justify-center gap-2 text-[11px] text-gray-400 px-3 flex-shrink-0"
+      style={{ background: 'rgba(0,217,192,0.06)', borderBottom: '1px solid rgba(0,217,192,0.12)' }}>
+      <Eye size={12} className="text-[var(--accent)]" />
+      <span className="hidden sm:inline">View only —</span>
+      <button
+        onClick={() => setShowLoginModal(true)}
+        className="px-2 py-0.5 rounded text-[var(--accent)] hover:text-white text-[11px] font-semibold transition-colors">
+        Sign in
       </button>
+      <span className="hidden sm:inline text-gray-600">to edit</span>
     </div>
   )
 }
