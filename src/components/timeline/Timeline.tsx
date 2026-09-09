@@ -51,7 +51,12 @@ export default function Timeline({ height }: Props) {
   const timelineRef = useRef<HTMLDivElement>(null);
   const [scrubbing, setScrubbing] = useState(false);
 
-  const totalDuration = 60; // Default 60 seconds
+  // Dynamic duration: content end + buffer (min 10s) — khali project me lambi timeline nahi
+  const contentEnd = tracks.reduce(
+    (max, t) => t.clips.reduce((m, c) => Math.max(m, c.startTime + c.duration / (c.speed || 1)), max),
+    0
+  );
+  const totalDuration = Math.max(10, Math.ceil(contentEnd) + 10);
   const pixelsPerSecond = 80 * timelineZoom;
   const totalWidth = totalDuration * pixelsPerSecond;
 

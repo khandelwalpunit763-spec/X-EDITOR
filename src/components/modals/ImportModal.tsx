@@ -27,6 +27,21 @@ export default function ImportModal() {
     return 'audio';
   };
 
+  // Real duration padho (video/audio metadata se), photo = 10 sec clip
+  const getMediaDuration = (file: File, type: string): Promise<number> =>
+    new Promise(resolve => {
+      if (type === 'image') return resolve(10);
+      const url = URL.createObjectURL(file);
+      const el = document.createElement(type === 'video' ? 'video' : 'audio') as HTMLMediaElement;
+      el.preload = 'metadata';
+      const done = (d: number) => { URL.revokeObjectURL(url); resolve(d); };
+      el.onloadedmetadata = () => done(Number.isFinite(el.duration) && el.duration > 0 ? el.duration : 10);
+      el.onerror = () => done(10);
+      el.src = url;
+      // safety timeout
+      setTimeout(() => done(10), 4000);
+    });
+
   const getFileIcon = (type: string) => {
     switch (type) {
       case 'image': return <Image size={16} className="text-orange-400" />;
@@ -36,10 +51,20 @@ export default function ImportModal() {
     }
   };
 
-  const handleImport = () => {
-    importedFiles.forEach(file => {
+  const handleImport = async () => {
+    // Track-wise end times — naya clip pichle clip ke baad lagta hai (smooth flow),
+    // alag tracks pe overlap allowed
+    const trackEnds: Record<string, number> = {};
+    tracks.forEach(t => {
+      trackEnds[t.id] = t.clips.reduce((m, c) => Math.max(m, c.startTime + c.duration), 0);
+    });
+
+    for (const file of importedFiles) {
       const type = getFileType(file);
       const url = URL.createObjectURL(file);
+      const duration = await getMediaDuration(file, type);
+      const track = tracks.find(t => t.type === type);
+
       addMediaFile({
         id: `media-${Date.now()}-${Math.random()}`,
         name: file.name,
@@ -51,18 +76,18 @@ export default function ImportModal() {
         createdAt: new Date().toISOString(),
       });
 
-      // Add to first matching track
-      const track = tracks.find(t => t.type === type);
       if (track) {
+        const startTime = trackEnds[track.id] || 0;
         addClip(track.id, {
           name: file.name,
           type,
           src: url,
-          startTime: 0,
-          duration: type === 'image' ? 5 : 10,
+          startTime,
+          duration,
         });
+        trackEnds[track.id] = startTime + duration;
       }
-    });
+    }
     setShowImportModal(false);
   };
 

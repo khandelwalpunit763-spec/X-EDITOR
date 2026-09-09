@@ -2,9 +2,33 @@ import { useRef, useEffect, useState } from 'react';
 import { useStore } from '../../store/useStore';
 import { useCaptionStore } from '../../store/captionStore';
 import { buildFilterCss, analyzeFilters } from '../../lib/vfx';
+import type { TimelineClip } from '../../types';
 import {
   ZoomIn, ZoomOut, Maximize, Grid3X3, Monitor, RotateCcw
 } from 'lucide-react';
+
+// Video clip preview — playhead ke saath play/pause
+function VideoPreview({ clip, playing }: { clip: TimelineClip; playing: boolean }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (playing) el.play().catch(() => {});
+    else el.pause();
+  }, [playing]);
+  return (
+    <video
+      ref={ref}
+      key={clip.id}
+      src={clip.src}
+      className="w-full h-full object-contain"
+      muted
+      loop
+      playsInline
+      preload="metadata"
+    />
+  );
+}
 
 const GRAIN_SVG = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E\")";
 
@@ -12,13 +36,19 @@ export default function CanvasArea() {
   const {
     zoom, setZoom, project, showGrid, setShowGrid,
     showGuides, showSafeZones, layers, selectedLayerId,
-    setSelectedLayerId, activeTool, currentTime
+    setSelectedLayerId, activeTool, currentTime, tracks, isPlaying
   } = useStore();
 
   const { captions, style: captionStyle, enabled: captionsEnabled, fontSize: captionFontScale } = useCaptionStore();
   const activeCaption = captionsEnabled
     ? captions.find(c => currentTime >= c.start && currentTime <= c.end)
     : undefined;
+
+  // Active media clips (video/image tracks) — playhead ke hisaab se canvas pe
+  const activeMediaClips = tracks
+    .filter(t => t.type === 'video' || t.type === 'image')
+    .map(t => t.clips.find(c => currentTime >= c.startTime && currentTime < c.startTime + c.duration / (c.speed || 1)))
+    .filter((c): c is TimelineClip => !!c);
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
@@ -111,6 +141,15 @@ export default function CanvasArea() {
               </div>
             )}
 
+            {/* Render active media clips (imported photos/videos) */}
+            {activeMediaClips.map(clip => (
+              <div key={clip.id} className="absolute inset-0 pointer-events-none">
+                {clip.type === 'image'
+                  ? <img src={clip.src} className="w-full h-full object-contain" alt="" draggable={false} />
+                  : <VideoPreview clip={clip} playing={isPlaying} />}
+              </div>
+            ))}
+
             {/* Render layers */}
             {layers.filter(l => l.visible).map(layer => {
               const { animClasses, overlays } = analyzeFilters(layer.filters);
@@ -180,7 +219,7 @@ export default function CanvasArea() {
             })}
 
             {/* Empty state */}
-            {layers.length === 0 && (
+            {layers.length === 0 && activeMediaClips.length === 0 && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
                   <div className="text-xs text-gray-600 mb-1">{projW} × {projH}</div>
