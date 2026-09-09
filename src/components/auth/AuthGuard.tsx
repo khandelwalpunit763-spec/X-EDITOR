@@ -1,7 +1,6 @@
 import { useAuthStore } from '../../store/authStore';
 import { useStore } from '../../store/useStore';
-import GoogleButton from './GoogleButton';
-import { Lock, Eye } from 'lucide-react';
+import { Lock, Eye, LogIn } from 'lucide-react';
 
 interface Props {
   children: React.ReactNode
@@ -42,9 +41,15 @@ export function ViewOnlyOverlay() {
         <p className="text-xs text-gray-400 mb-5 leading-relaxed">
           You're in view-only mode. Sign in to edit, save and export without limits.
         </p>
-        <GoogleButton onClick={() => setShowLoginModal(true)} />
+        <button
+          onClick={() => setShowLoginModal(true)}
+          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.99]"
+          style={{ background: 'var(--accent)', color: '#06110f' }}
+        >
+          <LogIn size={16} /> Sign in with Email
+        </button>
         <p className="text-[11px] text-gray-600 mt-4 flex items-center justify-center gap-1">
-          <Lock size={10} /> Free forever · Secure Google sign-in · No credit card
+          <Lock size={10} /> Free forever · Secure sign-in · No credit card
         </p>
       </div>
     </div>

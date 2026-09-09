@@ -11,7 +11,6 @@ interface AuthState {
 
   // Actions
   initialize: () => Promise<void>
-  signInWithGoogle: () => Promise<void>
   signInWithEmail: (email: string) => Promise<void>
   signOut: () => Promise<void>
   setMockUser: (email: string, name: string) => void
@@ -81,25 +80,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } catch (e) {
       console.error('Auth init failed', e)
       set({ isLoading: false })
-    }
-  },
-
-  signInWithGoogle: async () => {
-    if (!canUseSupabase()) {
-      // Mock mode — the UI (LoginModal) handles the demo sign-in flow.
-      return
-    }
-
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin,
-        queryParams: { access_type: 'offline', prompt: 'consent' }
-      }
-    })
-    if (error) {
-      console.error('Google login error', error)
-      throw error
     }
   },
 

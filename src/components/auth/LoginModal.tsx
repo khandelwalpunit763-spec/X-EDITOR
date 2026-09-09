@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useStore } from '../../store/useStore';
-import GoogleButton, { GoogleIcon } from './GoogleButton';
-import { X, ArrowLeft, Zap, Check, ShieldCheck, Cloud, Users } from 'lucide-react';
+import { X, Zap, Check, ShieldCheck, Cloud, Users } from 'lucide-react';
 
 export default function LoginModal() {
-  const { signInWithGoogle, signInWithEmail, isMockMode, user, isAuthenticated, signOut } = useAuthStore();
+  const { signInWithEmail, isMockMode, user, isAuthenticated, signOut } = useAuthStore();
   const { setShowLoginModal } = useStore();
 
-  const [step, setStep] = useState<'main' | 'email'>('main');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -16,33 +14,18 @@ export default function LoginModal() {
 
   const close = () => setShowLoginModal(false);
 
-  const handleGoogle = async () => {
-    if (isMockMode) {
-      // Demo environment — show a Google-style account step instead of a browser prompt
-      setStep('email');
-      return;
-    }
-    setLoading(true);
-    setError('');
-    try {
-      await signInWithGoogle();
-    } catch (e) {
-      setError((e as Error).message || 'Something went wrong');
-      setLoading(false);
-    }
-  };
-
-  const handleEmailNext = async () => {
-    if (!email.trim()) return;
-    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const handleContinue = async () => {
+    const clean = email.trim();
+    if (!clean) return;
+    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean);
     if (!valid) { setError('Enter a valid email address.'); return; }
 
     setLoading(true);
     setError('');
     try {
-      await signInWithEmail(email);
+      await signInWithEmail(clean);
       if (isMockMode) {
-        // demo user created instantly
+        // demo user created instantly — no redirect, current view stays as-is
         close();
         return;
       }
@@ -65,8 +48,7 @@ export default function LoginModal() {
           <X size={16} />
         </button>
 
-        {/* ===== STEP: MAIN ===== */}
-        {step === 'main' && (
+        {!isAuthenticated && (
           <div className="p-8">
             {/* Brand */}
             <div className="flex items-center gap-2.5 mb-8">
@@ -80,16 +62,47 @@ export default function LoginModal() {
             <h2 className="text-2xl font-bold text-white leading-tight">Sign in to X-EDITOR</h2>
             <p className="text-sm text-gray-400 mt-1.5">Create, edit and export professional videos & photos.</p>
 
-            {/* Google button */}
+            {/* Email login */}
             <div className="mt-7">
-              <GoogleButton onClick={handleGoogle} loading={loading && !isMockMode} />
-            </div>
-
-            {error && (
-              <div className="mt-3 text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
-                {error}
+              <div className="relative">
+                <input
+                  type="email"
+                  autoFocus
+                  value={email}
+                  onChange={e => { setEmail(e.target.value); setError(''); }}
+                  onKeyDown={e => e.key === 'Enter' && handleContinue()}
+                  placeholder=" "
+                  className="peer w-full px-3.5 pt-5 pb-2 text-sm text-white rounded-lg outline-none transition-colors"
+                  style={{ background: 'var(--bg-tertiary)', border: error ? '1px solid var(--danger)' : '1px solid var(--border-light)' }}
+                />
+                <label className="absolute left-3.5 top-1.5 text-[11px] text-gray-500 pointer-events-none">
+                  Email address
+                </label>
               </div>
-            )}
+
+              {error && <div className="mt-2 text-xs text-red-400">{error}</div>}
+
+              {isMockMode && (
+                <p className="mt-2 text-[11px] text-gray-500">
+                  Demo build — enter any email to continue instantly. No redirect, aap apni jagah se continue karenge.
+                </p>
+              )}
+
+              <button
+                onClick={handleContinue}
+                disabled={loading || !email.trim()}
+                className="w-full mt-4 py-2.5 rounded-lg text-sm font-semibold transition-all disabled:opacity-50"
+                style={{ background: 'var(--accent)', color: '#06110f' }}
+              >
+                {loading ? 'Please wait…' : sent ? 'Email sent!' : 'Continue'}
+              </button>
+
+              {sent && (
+                <div className="mt-4 text-xs text-green-400 bg-green-500/10 border border-green-500/20 rounded-lg px-3 py-2">
+                  We sent a sign-in link to {email}. Check your inbox.
+                </div>
+              )}
+            </div>
 
             {/* Perks */}
             <div className="mt-7 space-y-2.5">
@@ -110,70 +123,13 @@ export default function LoginModal() {
             {/* Trust line */}
             <div className="mt-7 flex items-center justify-center gap-1.5 text-[11px] text-gray-600">
               <ShieldCheck size={12} className="text-[var(--accent)]" />
-              Secured by Google OAuth — we never see your password.
+              Secure email sign-in — we never see your password.
             </div>
-          </div>
-        )}
-
-        {/* ===== STEP: EMAIL (Google-style account step) ===== */}
-        {step === 'email' && (
-          <div className="p-8">
-            <button onClick={() => setStep('main')} className="flex items-center gap-1 text-xs text-gray-400 hover:text-white transition-colors mb-6">
-              <ArrowLeft size={14} /> Back
-            </button>
-
-            <div className="flex items-center gap-2 mb-6">
-              <GoogleIcon size={20} />
-              <span className="text-lg font-medium text-white">Sign in</span>
-            </div>
-            <p className="text-sm text-gray-400 mb-6">to continue to <span className="text-white font-medium">X-EDITOR</span></p>
-
-            <div className="relative">
-              <input
-                type="email"
-                autoFocus
-                value={email}
-                onChange={e => { setEmail(e.target.value); setError(''); }}
-                onKeyDown={e => e.key === 'Enter' && handleEmailNext()}
-                placeholder=" "
-                className="peer w-full px-3.5 pt-5 pb-2 text-sm text-white rounded-lg outline-none transition-colors"
-                style={{ background: 'var(--bg-tertiary)', border: error ? '1px solid var(--danger)' : '1px solid var(--border-light)' }}
-              />
-              <label className="absolute left-3.5 top-1.5 text-[11px] text-gray-500 pointer-events-none">
-                Email or phone
-              </label>
-            </div>
-
-            {error && <div className="mt-2 text-xs text-red-400">{error}</div>}
-
-            {isMockMode && (
-              <p className="mt-2 text-[11px] text-gray-500">
-                This is a demo build — enter any email to continue instantly.
-              </p>
-            )}
-
-            <div className="flex items-center justify-between mt-6">
-              <button className="text-xs text-[var(--accent)] font-medium hover:underline">Create account</button>
-              <button
-                onClick={handleEmailNext}
-                disabled={loading || !email.trim()}
-                className="px-6 py-2 rounded-full text-sm font-semibold transition-all disabled:opacity-50"
-                style={{ background: 'var(--accent)', color: '#06110f' }}
-              >
-                {loading ? 'Please wait…' : sent ? 'Email sent!' : 'Next'}
-              </button>
-            </div>
-
-            {sent && (
-              <div className="mt-4 text-xs text-green-400 bg-green-500/10 border border-green-500/20 rounded-lg px-3 py-2">
-                We sent a sign-in link to {email}. Check your inbox.
-              </div>
-            )}
           </div>
         )}
 
         {/* ===== STEP: LOGGED IN ===== */}
-        {isAuthenticated && user && step === 'main' && (
+        {isAuthenticated && user && (
           <div className="p-8">
             <h2 className="text-xl font-bold text-white mb-5">You're signed in</h2>
             <div className="p-4 rounded-xl" style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}>
