@@ -179,13 +179,23 @@ export default function CanvasArea() {
                           fontSize: layer.text.fontSize * scale,
                           fontWeight: layer.text.fontWeight,
                           fontStyle: layer.text.fontStyle,
-                          color: layer.text.color,
+                          color: layer.text.gradient ? undefined : layer.text.color,
+                          background: layer.text.gradient
+                            ? `linear-gradient(${layer.text.gradient.angle}deg, ${layer.text.gradient.from}, ${layer.text.gradient.to})`
+                            : layer.text.backgroundColor,
+                          backgroundClip: layer.text.gradient ? 'text' : undefined,
+                          WebkitBackgroundClip: layer.text.gradient ? 'text' : undefined,
+                          WebkitTextFillColor: layer.text.gradient ? 'transparent' : undefined,
+                          borderRadius: layer.text.backgroundColor ? 6 : undefined,
                           textAlign: layer.text.align,
                           letterSpacing: layer.text.letterSpacing,
                           lineHeight: layer.text.lineHeight,
                           textDecoration: layer.text.textDecoration,
                           WebkitTextStroke: layer.text.stroke ? `${layer.text.stroke.width}px ${layer.text.stroke.color}` : undefined,
-                          textShadow: layer.text.shadow ? `${layer.text.shadow.x}px ${layer.text.shadow.y}px ${layer.text.shadow.blur}px ${layer.text.shadow.color}` : undefined,
+                          textShadow: layer.text.gradient ? undefined : [
+                            layer.text.shadow ? `${layer.text.shadow.x}px ${layer.text.shadow.y}px ${layer.text.shadow.blur}px ${layer.text.shadow.color}` : '',
+                            layer.text.glow ? `0 0 ${layer.text.glow.radius}px ${layer.text.glow.color}` : '',
+                          ].filter(Boolean).join(', ') || undefined,
                         }}>
                         {layer.text.content}
                       </div>

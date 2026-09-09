@@ -20,10 +20,49 @@ const textAnimations = [
   { id: 'shake', name: 'Shake' },
 ];
 
+const TEXT_STYLES = [
+  { id: 'clean', name: 'Clean', patch: { color: '#ffffff', fontWeight: 500, stroke: undefined, shadow: undefined, glow: undefined, backgroundColor: undefined, gradient: undefined } },
+  { id: 'outline', name: 'Outline', patch: { color: '#ffffff', fontWeight: 800, stroke: { color: '#000000', width: 2 }, glow: undefined, backgroundColor: undefined } },
+  { id: 'neon', name: 'Neon', patch: { color: '#00e5c7', fontWeight: 700, glow: { color: '#00e5c7', radius: 16 }, stroke: undefined, backgroundColor: undefined } },
+  { id: 'gradient', name: 'Gradient', patch: { color: '#ffffff', fontWeight: 700, gradient: { from: '#00e5c7', to: '#a78bfa', angle: 90 }, glow: undefined, backgroundColor: undefined } },
+  { id: 'cinema', name: 'Cinema', patch: { color: '#ffffff', fontWeight: 600, shadow: { color: 'rgba(0,0,0,0.85)', x: 0, y: 4, blur: 14 }, glow: undefined, backgroundColor: undefined } },
+  { id: 'bubble', name: 'Bubble', patch: { color: '#04110e', fontWeight: 700, backgroundColor: '#00e5c7', stroke: undefined, glow: undefined, gradient: undefined } },
+  { id: 'retro', name: 'Retro', patch: { color: '#ffd166', fontWeight: 800, fontFamily: 'Impact', shadow: { color: '#ef4444', x: 4, y: 4, blur: 0 }, glow: undefined, backgroundColor: undefined } },
+  { id: 'warning', name: 'Alert', patch: { color: '#ffffff', fontWeight: 800, backgroundColor: 'rgba(239,68,68,0.9)', stroke: undefined, glow: undefined, gradient: undefined } },
+];
+
 export default function TextPanel() {
   const { addLayer, selectedLayerId, layers, updateLayer } = useStore();
   const layer = layers.find(l => l.id === selectedLayerId && l.type === 'text');
   const [fontSearch, setFontSearch] = useState('');
+
+  const applyTextStyle = (patch: any) => {
+    if (layer?.text) {
+      updateLayer(layer.id, { text: { ...layer.text, ...patch } });
+    } else {
+      addLayer({
+        type: 'text',
+        name: 'Styled Text',
+        width: 400,
+        height: 90,
+        x: 100,
+        y: 100,
+        text: {
+          content: 'Style me',
+          fontFamily: 'Inter',
+          fontSize: 52,
+          fontWeight: 700,
+          fontStyle: 'normal',
+          textDecoration: 'none',
+          color: '#ffffff',
+          letterSpacing: 0,
+          lineHeight: 1.4,
+          align: 'center',
+          ...patch,
+        },
+      });
+    }
+  };
 
   const addTextLayer = () => {
     addLayer({
@@ -60,6 +99,42 @@ export default function TextPanel() {
       <button className="btn btn-primary w-full text-xs" onClick={addTextLayer}>
         <Plus size={14} /> Add Text Layer
       </button>
+
+      {/* Text style presets */}
+      <div>
+        <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">✨ Text Styles</div>
+        <div className="grid grid-cols-4 gap-1.5">
+          {TEXT_STYLES.map(s => (
+            <button
+              key={s.id}
+              onClick={() => applyTextStyle(s.patch)}
+              title={s.name}
+              className="h-11 rounded-lg flex items-center justify-center transition-all hover:scale-105 active:scale-95"
+              style={{
+                background: 'linear-gradient(150deg, #14211e, #0d1214)',
+                border: '1px solid var(--border)',
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: (s.patch.fontWeight as number) || 600,
+                  fontFamily: s.patch.fontFamily,
+                  color: s.patch.color,
+                  background: s.patch.backgroundColor,
+                  padding: s.patch.backgroundColor ? '1px 5px' : undefined,
+                  borderRadius: 4,
+                  WebkitTextStroke: s.patch.stroke ? `${s.patch.stroke.width}px ${s.patch.stroke.color}` : undefined,
+                  textShadow: s.patch.shadow ? `${s.patch.shadow.x}px ${s.patch.shadow.y}px ${s.patch.blur}px ${s.patch.shadow.color}` : s.patch.glow ? `0 0 ${s.patch.glow.radius}px ${s.patch.glow.color}` : undefined,
+                }}
+              >
+                Aa
+              </span>
+            </button>
+          ))}
+        </div>
+        <p className="text-[10px] text-gray-600 mt-1.5">Style pe click karo — selected text pe lagega, warna naya styled text banega</p>
+      </div>
 
       {layer?.text ? (
         <>

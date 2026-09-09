@@ -4,7 +4,7 @@ import {
   Play, Pause, SkipBack, SkipForward, ChevronLeft, ChevronRight,
   Volume2, VolumeX, Lock, Unlock, Eye, EyeOff, Plus,
   Scissors, Copy, Maximize2, ZoomIn, ZoomOut, Gauge,
-  Film, Image, Type, Volume2 as AudioIcon,
+  Film, Image, Type, Volume2 as AudioIcon, Trash2,
   Sparkles
 } from 'lucide-react';
 
@@ -35,8 +35,93 @@ export default function Timeline({ height }: Props) {
     tracks, currentTime, setCurrentTime, isPlaying, setIsPlaying,
     selectedClipId, setSelectedClipId, splitClip,
     duplicateClip, addTrack, updateTrack, timelineZoom,
-    setTimelineZoom, project, updateClip
+    setTimelineZoom, project, updateClip, removeClip
   } = useStore();
+
+  const tracksBodyRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{
+    clipId: string; type: string; fromTrackId: string;
+    targetTrackId: string; origStart: number; newStart: number;
+    startX: number; startY: number; moved: boolean;
+  } | null>(null);
+  const [draggingClipId, setDraggingClipId] = useState<string | null>(null);
+  const [ghost, setGhost] = useState<{ trackId: string; start: number; width: number } | null>(null);
+
+  // Drag clip — time change + dusri same-type track (Video 1 -> Video 2) pe drop
+  const startClipDrag = (e: React.MouseEvent, trackId: string, clip: any) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    e.stopPropagation();
+    dragRef.current = {
+      clipId: clip.id, type: clip.type, fromTrackId: trackId, targetTrackId: trackId,
+      origStart: clip.startTime, newStart: clip.startTime,
+      startX: e.clientX, startY: e.clientY, moved: false,
+    };
+
+    const onMove = (ev: MouseEvent) => {
+      const d = dragRef.current;
+      if (!d) return;
+      const dx = ev.clientX - d.startX;
+      const dy = ev.clientY - d.startY;
+      if (!d.moved && Math.abs(dx) + Math.abs(dy) < 6) return;
+      d.moved = true;
+      setDraggingClipId(d.clipId);
+      document.body.style.userSelect = 'none';
+      document.body.style.cursor = 'grabbing';
+
+      // Target track = jahan cursor hai (same type only)
+      if (tracksBodyRef.current) {
+        const rect = tracksBodyRef.current.getBoundingClientRect();
+        const y = ev.clientY - rect.top;
+        let acc = 0;
+        for (const t of tracks) {
+          acc += t.height;
+          if (y <= acc) {
+            if (t.type === d.type) d.targetTrackId = t.id;
+            break;
+          }
+        }
+      }
+      d.newStart = Math.max(0, Math.round((d.origStart + dx / pixelsPerSecond) * 10) / 10);
+      setGhost({ trackId: d.targetTrackId, start: d.newStart, width: clip.duration });
+    };
+
+    const onUp = () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
+      const d = dragRef.current;
+      dragRef.current = null;
+      setGhost(null);
+      setDraggingClipId(null);
+      if (!d || !d.moved) return;
+
+      const st = useStore.getState();
+      const srcTrack = st.tracks.find(t => t.id === d.fromTrackId);
+      const clipNow = srcTrack?.clips.find(c => c.id === d.clipId);
+      if (!clipNow) return;
+      if (d.targetTrackId !== d.fromTrackId || Math.abs(d.newStart - d.origStart) > 0.001) {
+        const { id, trackId, ...rest } = clipNow as any;
+        st.removeClip(d.fromTrackId, d.clipId);
+        st.addClip(d.targetTrackId, { ...rest, startTime: d.newStart });
+        st.setSelectedClipId(null);
+      }
+    };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  };
+
+  const deleteSelectedClip = () => {
+    const st = useStore.getState();
+    if (!st.selectedClipId) return;
+    const tr = st.tracks.find(t => t.clips.some(c => c.id === st.selectedClipId));
+    if (tr) {
+      st.removeClip(tr.id, st.selectedClipId!);
+      st.setSelectedClipId(null);
+    }
+  };
 
   // Selected clip (for speed ramp controls)
   const selected = (() => {
@@ -110,6 +195,19 @@ export default function Timeline({ height }: Props) {
       }
       if (e.code === 'ArrowRight') {
         setCurrentTime(useStore.getState().currentTime + 1 / (project?.fps || 30));
+      }
+      // Delete/Backspace = selected clip remove
+      if ((e.code === 'Delete' || e.code === 'Backspace') &&
+          !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) {
+        const st = useStore.getState();
+        if (st.selectedClipId) {
+          e.preventDefault();
+          const tr = st.tracks.find(t => t.clips.some(c => c.id === st.selectedClipId));
+          if (tr) {
+            st.removeClip(tr.id, st.selectedClipId);
+            st.setSelectedClipId(null);
+          }
+        }
       }
     };
     window.addEventListener('keydown', handleKey);
@@ -203,6 +301,15 @@ export default function Timeline({ height }: Props) {
             onChange={e => updateClip(selected.trackId, selected.clip.id, { speed: parseFloat(e.target.value) })}
             className="slider w-20 sm:w-28 flex-shrink-0" />
           <span className="text-[10px] font-mono text-[var(--accent)] flex-shrink-0 w-9">{selected.clip.speed.toFixed(2)}×</span>
+          <div className="w-px h-4 mx-1 flex-shrink-0" style={{ background: 'var(--border)' }} />
+          <button onClick={deleteSelectedClip}
+            className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold flex-shrink-0 transition-colors"
+            style={{ background: 'rgba(239,68,68,0.12)', color: '#f87171' }}>
+            <Trash2 size={10} /> Delete
+          </button>
+          <span className="text-[9px] text-[var(--text-muted)] flex-shrink-0 hidden md:inline">
+            · Drag karke kisi bhi same-type track pe le jao
+          </span>
         </div>
       )}
 
@@ -290,7 +397,7 @@ export default function Timeline({ height }: Props) {
           </div>
 
           {/* Tracks */}
-          <div className="relative" style={{ width: totalWidth }}>
+          <div className="relative" style={{ width: totalWidth }} ref={tracksBodyRef}>
             {tracks.map(track => (
               <div 
                 key={track.id} 
@@ -300,12 +407,23 @@ export default function Timeline({ height }: Props) {
                 {/* Track background */}
                 <div className="absolute inset-0 opacity-30" 
                   style={{ background: `${trackColors[track.type]}08` }} />
+
+                {/* Drop ghost while dragging */}
+                {ghost && ghost.trackId === track.id && (
+                  <div className="absolute top-0.5 bottom-0.5 rounded-md pointer-events-none z-10"
+                    style={{
+                      left: ghost.start * pixelsPerSecond,
+                      width: Math.max(20, ghost.width * pixelsPerSecond),
+                      border: '2px dashed var(--accent)',
+                      background: 'rgba(0,229,199,0.12)',
+                    }} />
+                )}
                 
                 {/* Clips */}
                 {track.clips.map(clip => (
                   <div
                     key={clip.id}
-                    className={`absolute top-1 bottom-1 rounded-md cursor-pointer transition-shadow flex items-center overflow-hidden ${
+                    className={`absolute top-1 bottom-1 rounded-md cursor-grab active:cursor-grabbing transition-shadow flex items-center overflow-hidden ${
                       selectedClipId === clip.id 
                         ? 'ring-2 ring-white/50 shadow-lg' 
                         : 'hover:brightness-110'
@@ -315,7 +433,9 @@ export default function Timeline({ height }: Props) {
                       width: Math.max(20, clip.duration * pixelsPerSecond),
                       background: `linear-gradient(135deg, ${trackColors[track.type]}60, ${trackColors[track.type]}30)`,
                       borderLeft: `2px solid ${trackColors[track.type]}`,
+                      opacity: draggingClipId === clip.id ? 0.35 : 1,
                     }}
+                    onMouseDown={(e) => startClipDrag(e, track.id, clip)}
                     onClick={(e) => { e.stopPropagation(); setSelectedClipId(clip.id); }}
                   >
                     {/* Transition indicator left */}
@@ -327,15 +447,22 @@ export default function Timeline({ height }: Props) {
                     <span className="text-[9px] px-2 truncate text-white/80">{clip.name}</span>
                     
                     {/* Clip actions */}
-                    {selectedClipId === clip.id && clip.duration * pixelsPerSecond > 60 && (
+                    {selectedClipId === clip.id && (
                       <div className="flex items-center gap-0.5 ml-auto pr-1">
                         <button className="w-4 h-4 rounded bg-black/30 flex items-center justify-center hover:bg-black/50"
+                          title="Split"
                           onClick={(e) => { e.stopPropagation(); splitClip(track.id, clip.id, currentTime); }}>
                           <Scissors size={8} />
                         </button>
                         <button className="w-4 h-4 rounded bg-black/30 flex items-center justify-center hover:bg-black/50"
+                          title="Duplicate"
                           onClick={(e) => { e.stopPropagation(); duplicateClip(track.id, clip.id); }}>
                           <Copy size={8} />
+                        </button>
+                        <button className="w-4 h-4 rounded bg-black/30 flex items-center justify-center hover:bg-red-500/70"
+                          title="Delete clip"
+                          onClick={(e) => { e.stopPropagation(); removeClip(track.id, clip.id); setSelectedClipId(null); }}>
+                          <Trash2 size={8} />
                         </button>
                       </div>
                     )}

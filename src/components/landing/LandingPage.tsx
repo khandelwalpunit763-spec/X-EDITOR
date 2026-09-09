@@ -98,8 +98,8 @@ export default function LandingPage() {
           {/* Right — floating editor mock */}
           <div className="relative hidden sm:block reveal reveal-d2">
             <div className="floaty">
-              <div className="rounded-2xl overflow-hidden"
-                style={{ border: '1px solid var(--border-light)', background: 'var(--bg-secondary)', boxShadow: '0 40px 80px rgba(0,0,0,0.55), 0 0 60px rgba(0,229,199,0.07)', transform: 'rotate(1.2deg)' }}>
+              <div className="hero-mock rounded-2xl overflow-hidden"
+                style={{ border: '1px solid var(--border-light)', background: 'var(--bg-secondary)', boxShadow: '0 40px 80px rgba(0,0,0,0.45), 0 0 60px rgba(0,229,199,0.08)', transform: 'rotate(1.2deg)' }}>
                 {/* title bar */}
                 <div className="h-9 flex items-center px-3.5 gap-2" style={{ background: 'var(--bg-tertiary)', borderBottom: '1px solid var(--border)' }}>
                   <div className="flex gap-1.5">
@@ -107,49 +107,71 @@ export default function LandingPage() {
                     <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/90" />
                     <div className="w-2.5 h-2.5 rounded-full bg-green-500/90" />
                   </div>
-                  <span className="text-[10px] text-[var(--text-muted)] mx-auto">reels_final_v2.xedit</span>
+                  <span className="text-[10px] text-[var(--text-muted)] mx-auto font-medium">reels_final_v2.xedit</span>
+                  <span className="badge badge-accent text-[8px]">Auto-saved</span>
                 </div>
                 {/* body */}
                 <div className="flex h-56 sm:h-72">
+                  {/* tools */}
                   <div className="w-10 flex flex-col items-center py-2.5 gap-2" style={{ borderRight: '1px solid var(--border)', background: 'var(--bg-secondary)' }}>
                     {[1, 2, 3, 4, 5, 6].map(i => (
-                      <div key={i} className="w-6 h-6 rounded-md" style={{ background: i === 2 ? 'var(--accent)' : 'var(--bg-elevated)' }} />
+                      <div key={i} className="w-6 h-6 rounded-md" style={{ background: i === 2 ? 'var(--accent)' : 'var(--bg-elevated)', boxShadow: i === 2 ? '0 2px 8px rgba(0,229,199,0.4)' : undefined }} />
                     ))}
                   </div>
-                  <div className="flex-1 flex items-center justify-center relative" style={{ background: 'linear-gradient(160deg, #0c1f1c, #0a0a0c)' }}>
-                    <div className="w-[62%] h-[82%] rounded-lg flex items-center justify-center relative overflow-hidden"
-                      style={{ background: 'linear-gradient(135deg, #043029, #0b3b3a)', border: '1px solid rgba(0,229,199,0.25)' }}>
-                      <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(0,229,199,0.18)' }}>
-                        <Play size={20} className="text-[var(--accent)] ml-0.5" />
-                      </div>
+                  {/* canvas */}
+                  <div className="flex-1 flex items-center justify-center relative" style={{ background: 'linear-gradient(160deg, #0c211e, #0b0d0e)' }}>
+                    <div className="w-[64%] h-[84%] rounded-lg relative overflow-hidden"
+                      style={{ background: 'linear-gradient(135deg, #0a4a3f, #0b3b3a 55%, #123c4a)', border: '1px solid rgba(0,229,199,0.3)', boxShadow: '0 12px 40px rgba(0,0,0,0.5)' }}>
+                      {/* fake subject */}
+                      <div className="absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full"
+                        style={{ background: 'radial-gradient(circle at 35% 35%, #7cf5e3, #00b8a0 70%)', boxShadow: '0 0 30px rgba(0,229,199,0.45)' }} />
+                      <div className="absolute left-1/2 top-[62%] -translate-x-1/2 w-16 h-8 rounded-lg" style={{ background: 'rgba(0,229,199,0.14)' }} />
                       {/* caption preview */}
-                      <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 cap-base cap-classic text-[10px] sm:text-xs px-2">
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 cap-base cap-classic text-[10px] sm:text-xs px-2">
                         Ye caption AI ne banaya ✨
                       </div>
+                      {/* safe-zone */}
+                      <div className="absolute border border-dashed rounded" style={{ inset: '8%', borderColor: 'rgba(255,255,255,0.08)' }} />
                     </div>
+                  </div>
+                  {/* properties */}
+                  <div className="w-24 hidden md:flex flex-col" style={{ borderLeft: '1px solid var(--border)', background: 'var(--bg-secondary)' }}>
+                    <div className="px-2.5 py-2 border-b text-[8px] font-bold uppercase tracking-wider" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>Properties</div>
+                    {['Opacity', 'Scale', 'Rotate', 'Glow'].map((p, i) => (
+                      <div key={p} className="px-2.5 py-2 border-b" style={{ borderColor: 'var(--border)' }}>
+                        <div className="text-[8px] mb-1" style={{ color: 'var(--text-muted)' }}>{p}</div>
+                        <div className="h-1 rounded-full" style={{ background: 'var(--bg-elevated)' }}>
+                          <div className="h-1 rounded-full" style={{ width: `${70 - i * 15}%`, background: 'var(--accent)' }} />
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
                 {/* timeline */}
-                <div className="h-16 border-t p-2 flex flex-col gap-1.5" style={{ borderColor: 'var(--border)', background: 'var(--bg-tertiary)' }}>
+                <div className="h-[76px] border-t p-2 flex flex-col gap-1.5 relative" style={{ borderColor: 'var(--border)', background: 'var(--bg-tertiary)' }}>
                   <div className="flex items-center gap-1.5">
                     <div className="w-10 text-[8px] text-[var(--text-muted)]">V1</div>
-                    <div className="h-3.5 rounded flex-[3]" style={{ background: 'linear-gradient(90deg, rgba(0,229,199,0.5), rgba(0,229,199,0.25))' }} />
-                    <div className="h-3.5 rounded flex-1" style={{ background: 'rgba(0,229,199,0.15)' }} />
+                    <div className="h-3.5 rounded flex-[3]" style={{ background: 'linear-gradient(90deg, rgba(0,229,199,0.55), rgba(0,229,199,0.3))' }} />
+                    <div className="h-3.5 rounded flex-1" style={{ background: 'rgba(0,229,199,0.16)' }} />
                   </div>
                   <div className="flex items-center gap-1.5">
                     <div className="w-10 text-[8px] text-[var(--text-muted)]">A1</div>
-                    <div className="h-3.5 rounded flex-[2]" style={{ background: 'rgba(234,179,8,0.35)' }} />
-                    <div className="h-3.5 rounded flex-[2.5]" style={{ background: 'rgba(234,179,8,0.2)' }} />
+                    <div className="h-3.5 rounded flex-[2]" style={{ background: 'rgba(234,179,8,0.4)' }} />
+                    <div className="h-3.5 rounded flex-[2.5]" style={{ background: 'rgba(234,179,8,0.22)' }} />
+                  </div>
+                  {/* playhead */}
+                  <div className="absolute top-1 bottom-1 w-px" style={{ left: '46%', background: '#ef4444' }}>
+                    <div className="absolute -top-0.5 -left-[5px] w-[11px] h-[9px]" style={{ background: '#ef4444', clipPath: 'polygon(0 0, 100% 0, 50% 100%)' }} />
                   </div>
                 </div>
               </div>
             </div>
 
             {/* floating chips */}
-            <div className="absolute -left-6 top-8 chip glass-light hidden lg:flex" style={{ background: 'rgba(16,16,20,0.85)' }}>
+            <div className="absolute -left-6 top-8 chip hidden lg:flex" style={{ background: 'var(--bg-secondary)', boxShadow: '0 8px 24px rgba(0,0,0,0.25)' }}>
               <Captions size={12} /> AI Captions: ON
             </div>
-            <div className="absolute -right-4 bottom-16 chip hidden lg:flex" style={{ background: 'rgba(16,16,20,0.85)', borderColor: 'rgba(255,209,102,0.3)', color: 'var(--warm)' }}>
+            <div className="absolute -right-4 bottom-16 chip hidden lg:flex" style={{ background: 'var(--bg-secondary)', borderColor: 'rgba(255,209,102,0.4)', color: 'var(--warm)', boxShadow: '0 8px 24px rgba(0,0,0,0.25)' }}>
               <Gauge size={12} /> 2× speed ramp
             </div>
           </div>
