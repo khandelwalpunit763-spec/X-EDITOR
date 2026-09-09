@@ -5,7 +5,7 @@ import BackButton from '../common/BackButton';
 import {
   Plus, FolderOpen, Save, Undo2, Redo2, Upload, Download, Share2,
   Settings, HelpCircle, Zap, ChevronDown, Monitor, Users, Captions, Crop,
-  Grid3X3, Ruler, Magnet, Smartphone, Tablet, MonitorCheck
+  Grid3X3, Ruler, Magnet, Smartphone, Tablet, MonitorCheck, Sun, Moon
 } from 'lucide-react';
 
 const ASPECT_PRESETS = [
@@ -21,7 +21,8 @@ export default function TopBar() {
     setShowImportModal, setShowSettingsModal, setProject,
     setShowShortcutsModal, showGrid, setShowGrid,
     showGuides, setShowGuides, showSafeZones, setShowSafeZones,
-    snapToObjects, setSnapToObjects, setZoom, setShowCaptionsModal
+    snapToObjects, setSnapToObjects, setZoom, setShowCaptionsModal,
+    theme, toggleTheme
   } = useStore();
   const { captions } = useCaptionStore();
 
@@ -205,6 +206,9 @@ export default function TopBar() {
           </button>
         </div>
 
+        <button className="tool-btn w-8 h-8 hidden sm:flex" onClick={toggleTheme} title={theme === 'dark' ? 'Light mode' : 'Dark mode'}>
+          {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+        </button>
         <button className="btn btn-ghost text-xs h-7 px-2 hidden sm:flex" onClick={() => setShowShortcutsModal(true)}>
           <HelpCircle size={14} />
         </button>

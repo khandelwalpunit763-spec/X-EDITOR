@@ -25,6 +25,17 @@ function App() {
 
   const [showRestorePrompt, setShowRestorePrompt] = useState(false);
 
+  // Keep <html data-theme> in sync with store
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', useStore.getState().theme);
+    const unsub = useStore.subscribe((state, prev) => {
+      if (state.theme !== prev.theme) {
+        document.documentElement.setAttribute('data-theme', state.theme);
+      }
+    });
+    return unsub;
+  }, [])
+
   // Auto-save hook (only in editor)
   useAutoSave()
 

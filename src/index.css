@@ -49,6 +49,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     height: 100%;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 
   #root {
@@ -66,6 +67,102 @@
     outline: 2px solid rgba(0, 229, 199, 0.5);
     outline-offset: 2px;
   }
+
+  /* ============ LIGHT THEME ============ */
+  :root[data-theme="light"] {
+    --accent: #00b89f;
+    --accent-hover: #00d9bc;
+    --accent-muted: #009684;
+    --accent-deep: #d9f7f2;
+    --warm: #d99a06;
+    --bg-primary: #f4f4f5;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #ebebed;
+    --bg-elevated: #e0e0e4;
+    --bg-hover: #d6d6db;
+    --text-primary: #16161a;
+    --text-secondary: #494952;
+    --text-muted: #7b7b86;
+    --border: #dcdce1;
+    --border-light: #c8c8cf;
+    --shadow-glow: 0 0 24px rgba(0, 184, 159, 0.22);
+  }
+
+  :root[data-theme="light"] body {
+    background: var(--bg-primary);
+  }
+
+  /* Remap hardcoded dark utilities in light mode */
+  :root[data-theme="light"] .text-white { color: #16161a; }
+  :root[data-theme="light"] .text-gray-300 { color: #2e2e35; }
+  :root[data-theme="light"] .text-gray-400 { color: #494952; }
+  :root[data-theme="light"] .text-gray-500 { color: #63636e; }
+  :root[data-theme="light"] .text-gray-600 { color: #7b7b86; }
+  :root[data-theme="light"] .text-gray-700 { color: #97979f; }
+  :root[data-theme="light"] .text-gray-800 { color: #adadb4; }
+  :root[data-theme="light"] .border-gray-700 { border-color: var(--border-light); }
+  :root[data-theme="light"] .border-gray-600 { border-color: var(--border); }
+
+  :root[data-theme="light"] .glass {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: var(--border);
+  }
+
+  :root[data-theme="light"] .glass-light {
+    background: rgba(255, 255, 255, 0.65);
+  }
+
+  :root[data-theme="light"] .context-menu {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.14);
+  }
+
+  :root[data-theme="light"] .bento-card {
+    background: linear-gradient(180deg, #ffffff, #fafafa);
+  }
+
+  :root[data-theme="light"] .hero-grid-bg {
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  }
+
+  :root[data-theme="light"] .text-gradient {
+    background: linear-gradient(100deg, #00b89f 10%, #0a8f7d 55%, #16161a 95%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  :root[data-theme="light"] .glow-orb { opacity: 0.3; }
+
+  :root[data-theme="light"] .btn-primary {
+    background: var(--accent);
+    color: #ffffff;
+  }
+
+  :root[data-theme="light"] .btn-primary:hover {
+    background: var(--accent-hover);
+    box-shadow: 0 6px 20px rgba(0, 184, 159, 0.3);
+  }
+
+  :root[data-theme="light"] .tool-btn.active {
+    color: #ffffff;
+  }
+
+  :root[data-theme="light"] .chip {
+    background: rgba(0, 184, 159, 0.08);
+    border-color: rgba(0, 184, 159, 0.3);
+    color: #00856f;
+  }
+
+  :root[data-theme="light"] .badge-accent {
+    background: rgba(0, 184, 159, 0.12);
+    color: #00856f;
+  }
+
+  :root[data-theme="light"] .marquee::before { background: linear-gradient(to right, var(--bg-primary), transparent); }
+  :root[data-theme="light"] .marquee::after { background: linear-gradient(to left, var(--bg-primary), transparent); }
 }
 
 @layer components {

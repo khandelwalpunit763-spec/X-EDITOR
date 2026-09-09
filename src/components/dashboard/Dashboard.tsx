@@ -7,11 +7,12 @@ import { QRCodeSVG } from 'qrcode.react';
 import { 
   Plus, FolderOpen, Image, Film, Wand2, Download, Trash2, Settings,
   Search, Grid3X3, List, Clock, MoreVertical, Zap, ArrowLeft,
-  Layers, Type, Music, Sparkles, FileText, QrCode, Upload, FileImage
+  Layers, Type, Music, Sparkles, FileText, QrCode, Upload, FileImage,
+  Sun, Moon
 } from 'lucide-react';
 
 export default function Dashboard() {
-  const { setView, setShowNewProjectModal, setEditorMode } = useStore();
+  const { setView, setShowNewProjectModal, setEditorMode, theme, toggleTheme } = useStore();
   const [activeTab, setActiveTab] = useState('projects');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
@@ -94,6 +95,9 @@ export default function Dashboard() {
           </div>
           <button className="btn btn-ghost hidden sm:flex" onClick={() => setShowNewProjectModal(true)}>
             <Settings size={16} />
+          </button>
+          <button className="tool-btn w-8 h-8" onClick={toggleTheme} title={theme === 'dark' ? 'Light mode' : 'Dark mode'}>
+            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
           </button>
         </div>
       </div>

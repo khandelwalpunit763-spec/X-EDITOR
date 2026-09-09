@@ -13,6 +13,8 @@ interface HistoryEntry {
 
 interface AppState {
   // App state
+  theme: 'dark' | 'light';
+  toggleTheme: () => void;
   view: AppView;
   viewHistory: AppView[];
   editorMode: EditorMode;
@@ -153,6 +155,13 @@ const createDefaultTracks = (): Track[] => [
 ];
 
 export const useStore = create<AppState>((set, get) => ({
+  theme: (typeof localStorage !== 'undefined' && localStorage.getItem('xeditor_theme') === 'light') ? 'light' : 'dark',
+  toggleTheme: () => set(s => {
+    const next = s.theme === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem('xeditor_theme', next); } catch {}
+    document.documentElement.setAttribute('data-theme', next);
+    return { theme: next };
+  }),
   view: 'landing',
   viewHistory: [],
   editorMode: 'video',

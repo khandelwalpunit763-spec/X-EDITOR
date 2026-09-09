@@ -2,11 +2,18 @@ import { useStore } from '../../store/useStore';
 import {
   Film, Image, Wand2, Eraser, Volume2, ImageIcon, Layers,
   Sparkles, ArrowRight, ArrowUpRight, Play, Zap, Scissors,
-  Music, FileImage, Monitor, Download, Gauge, Captions, Crop, Palette
+  Music, FileImage, Monitor, Download, Gauge, Captions, Crop, Palette,
+  Sun, Moon
 } from 'lucide-react';
 
 export default function LandingPage() {
-  const { setView } = useStore();
+  const { setView, theme, toggleTheme } = useStore();
+
+  // Open studio + file manager khulte hi media select karne ke liye (0.3s)
+  const openStudio = () => {
+    setView('editor');
+    window.setTimeout(() => useStore.getState().setShowImportModal(true), 300);
+  };
 
   const marqueeItems = [
     'AI Auto-Captions', 'Speed Ramp', 'Chroma Key', 'Magic Resize', 'Beat Sync',
@@ -29,7 +36,10 @@ export default function LandingPage() {
           <div className="flex items-center gap-1.5 sm:gap-2">
             <button className="btn btn-ghost text-xs sm:text-sm hidden md:flex" onClick={() => setView('dashboard')}>Dashboard</button>
             <button className="btn btn-ghost text-xs sm:text-sm hidden md:flex" onClick={() => setView('compress')}>Compressor</button>
-            <button className="btn btn-primary text-xs sm:text-sm" onClick={() => setView('editor')}>
+            <button className="tool-btn w-8 h-8" onClick={toggleTheme} title={theme === 'dark' ? 'Light mode' : 'Dark mode'}>
+              {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+            </button>
+            <button className="btn btn-primary text-xs sm:text-sm" onClick={openStudio}>
               Open Studio <ArrowRight size={14} />
             </button>
           </div>
@@ -62,7 +72,7 @@ export default function LandingPage() {
             </p>
 
             <div className="reveal reveal-d3 flex flex-col sm:flex-row gap-3 mt-8">
-              <button className="btn btn-primary text-base px-8 py-3.5 rounded-xl" onClick={() => setView('editor')}>
+              <button className="btn btn-primary text-base px-8 py-3.5 rounded-xl" onClick={openStudio}>
                 <Play size={18} /> Start Editing — it's free
               </button>
               <button className="btn btn-secondary text-base px-8 py-3.5 rounded-xl" onClick={() => setView('compress')}>
@@ -314,7 +324,7 @@ export default function LandingPage() {
             No download. No watermark. No signup. Bas kholo aur edit karo.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-3 mt-9">
-            <button className="btn btn-primary text-base px-10 py-4 rounded-xl" onClick={() => setView('editor')}>
+            <button className="btn btn-primary text-base px-10 py-4 rounded-xl" onClick={openStudio}>
               <Sparkles size={19} /> Launch Studio
             </button>
             <button className="btn btn-secondary text-base px-10 py-4 rounded-xl" onClick={() => setView('dashboard')}>
