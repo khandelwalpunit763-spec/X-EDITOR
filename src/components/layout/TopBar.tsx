@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useStore } from '../../store/useStore';
-import { useAuthStore } from '../../store/authStore';
 import BackButton from '../common/BackButton';
 import {
   Plus, FolderOpen, Save, Undo2, Redo2, Upload, Download, Share2,
-  Settings, HelpCircle, Zap, ChevronDown, Monitor, LogIn, LogOut, Users,
+  Settings, HelpCircle, Zap, ChevronDown, Monitor, Users,
   Grid3X3, Ruler, Magnet, Smartphone, Tablet, MonitorCheck
 } from 'lucide-react';
 
@@ -16,8 +15,6 @@ export default function TopBar() {
     showGuides, setShowGuides, showSafeZones, setShowSafeZones,
     snapToObjects, setSnapToObjects, setZoom
   } = useStore();
-  const { user, isAuthenticated, signOut } = useAuthStore();
-  const { setShowLoginModal } = useStore();
 
   const [showFileMenu, setShowFileMenu] = useState(false);
   const [showViewMenu, setShowViewMenu] = useState(false);
@@ -164,14 +161,6 @@ export default function TopBar() {
         <div className="flex items-center gap-1 ml-1 px-2 py-1 rounded-full text-[11px] hidden sm:flex" style={{ background: 'rgba(0,217,192,0.1)', border: '1px solid rgba(0,217,192,0.2)', color: 'var(--accent-hover)' }}>
           <Users size={12} /> Live
         </div>
-        {isAuthenticated && user ? (
-          <div className="flex items-center gap-1 ml-1">
-            <img src={user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${user.email}`} className="w-7 h-7 rounded-full border hidden sm:block" style={{ borderColor: 'var(--border)' }} alt="" />
-            <button className="tool-btn w-7 h-7 hidden sm:flex" onClick={signOut} title="Logout"><LogOut size={14} /></button>
-          </div>
-        ) : (
-          <button className="btn btn-ghost text-xs h-7 px-2 ml-1" onClick={() => setShowLoginModal(true)}><LogIn size={14} /> Login</button>
-        )}
       </div>
     </div>
   );

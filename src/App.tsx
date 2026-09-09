@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useStore } from './store/useStore';
-import { useAuthStore } from './store/authStore';
 import { useAutoSave } from './hooks/useAutoSave';
 import LandingPage from './components/landing/LandingPage';
 import Dashboard from './components/dashboard/Dashboard';
@@ -16,22 +15,15 @@ import WatermarkModal from './components/modals/WatermarkModal';
 import AIModal from './components/modals/AIModal';
 import ThumbnailModal from './components/modals/ThumbnailModal';
 import ShareUploadModal from './components/modals/ShareUploadModal';
-import LoginModal from './components/auth/LoginModal';
 
 function App() {
   const { view, showNewProjectModal, showExportModal, showImportModal, 
     showSettingsModal, showHelpModal, showShortcutsModal, showWatermarkModal,
-    showAIModal, showThumbnailModal, showShareModal, showLoginModal, setShowLoginModal,
+    showAIModal, showThumbnailModal, showShareModal,
     undo, redo, saveProject, setActiveTool, setShowShareModal, project } = useStore();
 
-  const { initialize, isLoading: authLoading } = useAuthStore();
   const [showRestorePrompt, setShowRestorePrompt] = useState(false);
 
-  const openLogin = () => setShowLoginModal(true);
-
-  // Init auth
-  useEffect(() => { initialize() }, [initialize])
-  
   // Auto-save hook (only in editor)
   useAutoSave()
 
@@ -113,19 +105,11 @@ function App() {
     setShowRestorePrompt(false)
   }
 
-  if (authLoading) {
-    return (
-      <div className="w-screen h-screen flex items-center justify-center bg-[var(--bg-primary)]">
-        <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
-      </div>
-    )
-  }
-
   return (
     <div className="w-full h-full overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)] relative">
-      {view === 'landing' && <LandingPage onLogin={openLogin} />}
-      {view === 'dashboard' && <Dashboard onLogin={openLogin} />}
-      {view === 'editor' && <EditorLayout onLogin={openLogin} />}
+      {view === 'landing' && <LandingPage />}
+      {view === 'dashboard' && <Dashboard />}
+      {view === 'editor' && <EditorLayout />}
       {view === 'compress' && <Compressor />}
 
       {showNewProjectModal && <NewProjectModal />}
@@ -138,7 +122,6 @@ function App() {
       {showAIModal && <AIModal />}
       {showThumbnailModal && <ThumbnailModal />}
       {showShareModal && <ShareUploadModal projectName={project?.name || 'Untitled'} onClose={() => setShowShareModal(false)} />}
-      {showLoginModal && <LoginModal />}
 
       {showRestorePrompt && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl"

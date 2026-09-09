@@ -4,14 +4,12 @@ import LeftToolbar from '../layout/LeftToolbar';
 import CanvasArea from './CanvasArea';
 import RightSidebar from '../panels/RightSidebar';
 import Timeline from '../timeline/Timeline';
-import { ReadOnlyBanner, ViewOnlyOverlay } from '../auth/AuthGuard';
-import { useAuthStore } from '../../store/authStore';
 import { useStore } from '../../store/useStore';
 import { initCollab, disconnectCollab } from '../../lib/collab';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { Users, Link2, Copy, Check, SlidersHorizontal, X } from 'lucide-react';
 
-export default function EditorLayout({ onLogin }: { onLogin?: () => void }) {
+export default function EditorLayout() {
   const [rightPanelWidth, setRightPanelWidth] = useState(280);
   const [timelineHeight, setTimelineHeight] = useState(220);
   const [isResizingPanel, setIsResizingPanel] = useState(false);
@@ -20,16 +18,20 @@ export default function EditorLayout({ onLogin }: { onLogin?: () => void }) {
   const [showMobilePanel, setShowMobilePanel] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const { project } = useStore();
-  const { user, isAuthenticated } = useAuthStore();
   const { isMobile, isSmall } = useIsMobile();
 
-  // Init collab when project loads
+  // Init collab when project loads (guest identity — no login needed)
   useEffect(() => {
-    if (project?.id && user) {
-      initCollab(project.id, user.id, user.user_metadata?.full_name || user.email || 'User');
+    if (project?.id) {
+      let guestId = localStorage.getItem('xeditor_guest_id');
+      if (!guestId) {
+        guestId = Math.random().toString(36).slice(2, 10);
+        localStorage.setItem('xeditor_guest_id', guestId);
+      }
+      initCollab(project.id, `guest-${guestId}`, 'Guest');
     }
     return () => { disconnectCollab(); };
-  }, [project?.id, user?.id]);
+  }, [project?.id]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -69,13 +71,12 @@ export default function EditorLayout({ onLogin }: { onLogin?: () => void }) {
   return (
     <div className="w-full h-full flex flex-col overflow-hidden" ref={containerRef}>
       <TopBar />
-      <ReadOnlyBanner />
       {/* Live Share Bar */}
       <div className="h-7 flex items-center justify-between px-3 text-[11px] flex-shrink-0" style={{ background: 'rgba(0,217,192,0.07)', borderBottom: '1px solid rgba(0,217,192,0.12)' }}>
         <div className="flex items-center gap-2 text-gray-400">
           <Users size={12} className="text-[var(--accent)]" />
           <span className="hidden sm:inline">Live Share: {project?.name || 'Untitled'}</span>
-          {isAuthenticated ? <span className="hidden sm:inline">• Invite link se koi bhi same project pe live edit kar sakta hai</span> : <span className="text-amber-400">• Login karke live collaboration enable karein</span>}
+          <span className="hidden sm:inline">• Invite link se koi bhi same project pe live edit kar sakta hai</span>
         </div>
         <button onClick={copyLink} className="flex items-center gap-1 px-2 py-1 rounded text-xs hover:bg-[var(--bg-hover)] text-gray-400 hover:text-white">
           {copied ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
@@ -91,8 +92,6 @@ export default function EditorLayout({ onLogin }: { onLogin?: () => void }) {
         <div className="flex-1 flex flex-col overflow-hidden relative">
           <div className="flex flex-1 overflow-hidden relative">
             <CanvasArea />
-            {/* view-only overlay blocks interactions */}
-            {!isAuthenticated && <ViewOnlyOverlay />}
 
             {/* Right panel — inline on desktop, overlay drawer on mobile */}
             {!isMobile ? (
@@ -129,14 +128,6 @@ export default function EditorLayout({ onLogin }: { onLogin?: () => void }) {
             onMouseDown={() => setIsResizingTimeline(true)}
           />
           <Timeline height={isMobile ? (isSmall ? 140 : 160) : timelineHeight} />
-          {!isAuthenticated && (
-            <div className="absolute bottom-0 left-0 right-0 h-[160px] flex items-center justify-center pointer-events-none" style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(2px)' }}>
-              <div className="pointer-events-auto bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl px-4 py-2 text-xs flex items-center gap-2">
-                <span className="text-gray-300">Sign in to edit the timeline</span>
-                <button onClick={onLogin} className="px-2.5 py-1 rounded bg-[var(--accent)] text-black text-xs font-semibold">Sign in</button>
-              </div>
-            </div>
-          )}
 
           {/* Horizontal tool strip on mobile */}
           {isMobile && <LeftToolbar horizontal />}

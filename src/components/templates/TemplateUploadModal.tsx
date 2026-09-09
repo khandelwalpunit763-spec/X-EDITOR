@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { X, Upload, Image as ImageIcon, Sparkles } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
-import { useAuthStore } from '../../store/authStore'
 import { supabase, canUseSupabase } from '../../lib/supabase'
 
 interface Props {
@@ -10,7 +9,6 @@ interface Props {
 }
 
 export default function TemplateUploadModal({ onClose, onCreated }: Props) {
-  const { user } = useAuthStore()
   const [title, setTitle] = useState('')
   const [category, setCategory] = useState('YouTube')
   const [preview, setPreview] = useState('')
@@ -29,7 +27,7 @@ export default function TemplateUploadModal({ onClose, onCreated }: Props) {
     setSaving(true)
     const template = {
       id: `tmpl-${Date.now()}`,
-      user_id: user?.id || 'guest',
+      user_id: 'guest',
       title: title.trim(),
       category,
       preview_image: preview,

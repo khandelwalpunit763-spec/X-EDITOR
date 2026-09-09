@@ -1,14 +1,12 @@
 import { useStore } from '../../store/useStore';
-import { useAuthStore } from '../../store/authStore';
 import {
   Film, Image, Wand2, Eraser, Volume2, ImageIcon, Layers,
   Sparkles, ArrowRight, Play, ChevronRight, Zap, Scissors,
-  Music, LogIn, LogOut, FileImage, Monitor, Download
+  Music, FileImage, Monitor, Download
 } from 'lucide-react';
 
-export default function LandingPage({ onLogin }: { onLogin?: () => void }) {
+export default function LandingPage() {
   const { setView } = useStore();
-  const { isAuthenticated, user, signOut } = useAuthStore();
 
   const features = [
     { icon: <Film size={22} />, title: 'Video Editor', desc: 'Multi-track timeline, keyframes, transitions aur speed control — sab kuch.', color: '#00d9c0' },
@@ -42,25 +40,9 @@ export default function LandingPage({ onLogin }: { onLogin?: () => void }) {
           <div className="flex items-center gap-2 sm:gap-3">
             <button className="btn btn-ghost text-sm hidden md:flex" onClick={() => setView('dashboard')}>Dashboard</button>
             <button className="btn btn-ghost text-sm hidden md:flex" onClick={() => setView('compress')}>Compressor</button>
-            {isAuthenticated ? (
-              <div className="flex items-center gap-2">
-                <div className="hidden sm:flex items-center gap-2 px-2 py-1 rounded-full text-xs" style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}>
-                  <img src={user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.email}`} className="w-6 h-6 rounded-full" alt="" />
-                  <span className="text-gray-300">{user?.user_metadata?.full_name || user?.email?.split('@')[0]}</span>
-                </div>
-                <button className="btn btn-ghost text-xs" onClick={signOut}><LogOut size={14} /> <span className="hidden sm:inline">Logout</span></button>
-                <button className="btn btn-primary text-sm" onClick={() => setView('editor')}>
-                  Start Editing <ArrowRight size={16} />
-                </button>
-              </div>
-            ) : (
-              <>
-                <button className="btn btn-ghost text-sm flex items-center gap-1" onClick={onLogin}><LogIn size={14} /> <span className="hidden sm:inline">Login</span></button>
-                <button className="btn btn-primary text-sm" onClick={() => setView('editor')}>
-                  Start Editing <ArrowRight size={16} />
-                </button>
-              </>
-            )}
+            <button className="btn btn-primary text-sm" onClick={() => setView('editor')}>
+              Start Editing <ArrowRight size={16} />
+            </button>
           </div>
         </div>
       </nav>

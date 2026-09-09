@@ -1,7 +1,5 @@
 import { useEffect, useRef } from 'react'
 import { useStore } from '../store/useStore'
-import { useAuthStore } from '../store/authStore'
-import { supabase, canUseSupabase } from '../lib/supabase'
 
 const AUTOSAVE_KEY = 'xeditor_autosave'
 const AUTOSAVE_INTERVAL = 2000 // 2 sec debounce
@@ -11,7 +9,6 @@ export function useAutoSave() {
   const lastSavedRef = useRef<string>('')
 
   const { project, layers, tracks, currentTime } = useStore()
-  const { user, isAuthenticated } = useAuthStore()
 
   // Create save payload
   const getPayload = () => {
@@ -22,7 +19,7 @@ export function useAutoSave() {
       tracks,
       currentTime,
       savedAt: new Date().toISOString(),
-      userId: user?.id || 'guest',
+      userId: 'guest',
     }
   }
 
@@ -43,40 +40,14 @@ export function useAutoSave() {
     }
   }
 
-  const saveToCloud = async (payload: any) => {
-    if (!canUseSupabase() || !isAuthenticated || !user) return
-    try {
-      const { error } = await supabase.from('projects').upsert({
-        id: payload.project.id,
-        user_id: user.id,
-        name: payload.project.name,
-        type: payload.project.type,
-        width: payload.project.width,
-        height: payload.project.height,
-        fps: payload.project.fps,
-        aspect_ratio: payload.project.aspectRatio,
-        background: payload.project.background,
-        data: { layers, tracks, currentTime },
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'id' })
-      if (error) throw error
-      console.log('☁️ Auto-saved to Supabase at', new Date().toLocaleTimeString())
-    } catch (e) {
-      console.error('Cloud autosave failed', e)
-      // fallback to local
-      saveToLocal(payload)
-    }
-  }
-
   const triggerSave = () => {
     const payload = getPayload()
     if (!payload) return
 
     // Debounce
     if (saveTimeoutRef.current) window.clearTimeout(saveTimeoutRef.current)
-    saveTimeoutRef.current = window.setTimeout(async () => {
+    saveTimeoutRef.current = window.setTimeout(() => {
       saveToLocal(payload)
-      if (isAuthenticated) await saveToCloud(payload)
     }, AUTOSAVE_INTERVAL)
   }
 
@@ -95,10 +66,6 @@ export function useAutoSave() {
         try {
           localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(payload))
         } catch {}
-        // Use beacon for cloud if possible
-        if (canUseSupabase() && isAuthenticated) {
-          navigator.sendBeacon?.(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/projects`, JSON.stringify(payload))
-        }
       }
     }
 
@@ -115,7 +82,7 @@ export function useAutoSave() {
       window.removeEventListener('beforeunload', handleBeforeUnload)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [project, layers, tracks, currentTime, isAuthenticated, user])
+  }, [project, layers, tracks, currentTime])
 
   // Restore helper
   const hasDraft = () => {

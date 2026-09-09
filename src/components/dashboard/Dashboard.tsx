@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useStore } from '../../store/useStore';
-import { useAuthStore } from '../../store/authStore';
 import BackButton from '../common/BackButton';
 import TemplateUploadModal from '../templates/TemplateUploadModal';
 import QRScanner, { TemplateSearchBar } from '../templates/QRScanner';
@@ -8,12 +7,11 @@ import { QRCodeSVG } from 'qrcode.react';
 import { 
   Plus, FolderOpen, Image, Film, Wand2, Download, Trash2, Settings,
   Search, Grid3X3, List, Clock, MoreVertical, Zap, ArrowLeft,
-  Layers, Type, Music, Sparkles, FileText, LogIn, LogOut, QrCode, Upload, FileImage
+  Layers, Type, Music, Sparkles, FileText, QrCode, Upload, FileImage
 } from 'lucide-react';
 
-export default function Dashboard({ onLogin }: { onLogin?: () => void }) {
+export default function Dashboard() {
   const { setView, setShowNewProjectModal, setEditorMode } = useStore();
-  const { isAuthenticated, user, signOut } = useAuthStore();
   const [activeTab, setActiveTab] = useState('projects');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
@@ -97,14 +95,6 @@ export default function Dashboard({ onLogin }: { onLogin?: () => void }) {
           <button className="btn btn-ghost hidden sm:flex" onClick={() => setShowNewProjectModal(true)}>
             <Settings size={16} />
           </button>
-          {isAuthenticated ? (
-            <div className="flex items-center gap-2">
-              <img src={user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.email}`} className="w-8 h-8 rounded-full border" style={{ borderColor: 'var(--border)' }} alt="" />
-              <button className="btn btn-ghost text-xs" onClick={signOut}><LogOut size={14} /> Logout</button>
-            </div>
-          ) : (
-            <button className="btn btn-primary text-xs" onClick={onLogin}><LogIn size={14} /> Login</button>
-          )}
         </div>
       </div>
 
@@ -274,8 +264,8 @@ export default function Dashboard({ onLogin }: { onLogin?: () => void }) {
             <div className="space-y-4">
               <div className="flex flex-wrap items-center gap-3">
                 <TemplateSearchBar onSearch={setSearchQuery} onQRScan={() => setShowQRScanner(true)} />
-                <button onClick={() => isAuthenticated ? setShowTemplateUpload(true) : onLogin?.()} className="btn btn-primary text-xs ml-auto">
-                  <Upload size={14} /> {isAuthenticated ? 'New Template' : 'Login to Add Template'}
+                <button onClick={() => setShowTemplateUpload(true)} className="btn btn-primary text-xs ml-auto">
+                  <Upload size={14} /> New Template
                 </button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
