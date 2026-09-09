@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import { useStore } from '../../store/useStore';
+import { useCaptionStore } from '../../store/captionStore';
 import { buildFilterCss, analyzeFilters } from '../../lib/vfx';
 import {
   ZoomIn, ZoomOut, Maximize, Grid3X3, Monitor, RotateCcw
@@ -11,8 +12,13 @@ export default function CanvasArea() {
   const {
     zoom, setZoom, project, showGrid, setShowGrid,
     showGuides, showSafeZones, layers, selectedLayerId,
-    setSelectedLayerId, activeTool
+    setSelectedLayerId, activeTool, currentTime
   } = useStore();
+
+  const { captions, style: captionStyle, enabled: captionsEnabled, fontSize: captionFontScale } = useCaptionStore();
+  const activeCaption = captionsEnabled
+    ? captions.find(c => currentTime >= c.start && currentTime <= c.end)
+    : undefined;
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
@@ -180,6 +186,17 @@ export default function CanvasArea() {
                   <div className="text-xs text-gray-600 mb-1">{projW} × {projH}</div>
                   <div className="text-[11px] text-gray-700">Drop media here or use tools</div>
                 </div>
+              </div>
+            )}
+
+            {/* AI caption overlay */}
+            {activeCaption && (
+              <div className="absolute left-0 right-0 pointer-events-none flex justify-center"
+                style={{ bottom: '6%' }}>
+                <span className={`cap-base cap-${captionStyle}`}
+                  style={{ fontSize: Math.max(10, displayH * 0.045 * captionFontScale) }}>
+                  {activeCaption.text}
+                </span>
               </div>
             )}
           </div>

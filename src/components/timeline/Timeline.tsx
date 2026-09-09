@@ -3,10 +3,12 @@ import { useStore } from '../../store/useStore';
 import { 
   Play, Pause, SkipBack, SkipForward, ChevronLeft, ChevronRight,
   Volume2, VolumeX, Lock, Unlock, Eye, EyeOff, Plus,
-  Scissors, Copy, Maximize2, ZoomIn, ZoomOut,
+  Scissors, Copy, Maximize2, ZoomIn, ZoomOut, Gauge,
   Film, Image, Type, Volume2 as AudioIcon,
   Sparkles
 } from 'lucide-react';
+
+const SPEED_PRESETS = [0.25, 0.5, 1, 1.5, 2, 4];
 
 interface Props {
   height: number;
@@ -33,8 +35,18 @@ export default function Timeline({ height }: Props) {
     tracks, currentTime, setCurrentTime, isPlaying, setIsPlaying,
     selectedClipId, setSelectedClipId, splitClip,
     duplicateClip, addTrack, updateTrack, timelineZoom,
-    setTimelineZoom, project
+    setTimelineZoom, project, updateClip
   } = useStore();
+
+  // Selected clip (for speed ramp controls)
+  const selected = (() => {
+    if (!selectedClipId) return null;
+    for (const t of tracks) {
+      const c = t.clips.find(clip => clip.id === selectedClipId);
+      if (c) return { clip: c, trackId: t.id };
+    }
+    return null;
+  })();
 
   const timelineRef = useRef<HTMLDivElement>(null);
   const [scrubbing, setScrubbing] = useState(false);
@@ -160,6 +172,34 @@ export default function Timeline({ height }: Props) {
           </button>
         </div>
       </div>
+
+      {/* Speed ramp bar — shows when a clip is selected */}
+      {selected && (selected.clip.type === 'video' || selected.clip.type === 'image') && (
+        <div className="h-8 flex items-center gap-2 px-3 border-b flex-shrink-0 overflow-x-auto no-scrollbar animate-slide-down"
+          style={{ borderColor: 'var(--border)', background: 'rgba(0,229,199,0.04)' }}>
+          <Gauge size={12} className="text-[var(--accent)] flex-shrink-0" />
+          <span className="text-[10px] font-semibold text-[var(--text-secondary)] flex-shrink-0 truncate max-w-[90px]">
+            {selected.clip.name}
+          </span>
+          <div className="flex items-center gap-0.5 flex-shrink-0">
+            {SPEED_PRESETS.map(sp => (
+              <button key={sp}
+                onClick={() => updateClip(selected.trackId, selected.clip.id, { speed: sp })}
+                className="px-1.5 py-0.5 rounded text-[10px] font-bold transition-colors"
+                style={selected.clip.speed === sp
+                  ? { background: 'var(--accent)', color: '#04110e' }
+                  : { background: 'var(--bg-elevated)', color: 'var(--text-secondary)' }}>
+                {sp}×
+              </button>
+            ))}
+          </div>
+          <input type="range" min="0.1" max="4" step="0.05"
+            value={selected.clip.speed}
+            onChange={e => updateClip(selected.trackId, selected.clip.id, { speed: parseFloat(e.target.value) })}
+            className="slider w-20 sm:w-28 flex-shrink-0" />
+          <span className="text-[10px] font-mono text-[var(--accent)] flex-shrink-0 w-9">{selected.clip.speed.toFixed(2)}×</span>
+        </div>
+      )}
 
       {/* Timeline Content */}
       <div className="flex flex-1 overflow-hidden">

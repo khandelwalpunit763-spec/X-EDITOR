@@ -1,23 +1,40 @@
 import { useState } from 'react';
 import { useStore } from '../../store/useStore';
+import { useCaptionStore } from '../../store/captionStore';
 import BackButton from '../common/BackButton';
 import {
   Plus, FolderOpen, Save, Undo2, Redo2, Upload, Download, Share2,
-  Settings, HelpCircle, Zap, ChevronDown, Monitor, Users,
+  Settings, HelpCircle, Zap, ChevronDown, Monitor, Users, Captions, Crop,
   Grid3X3, Ruler, Magnet, Smartphone, Tablet, MonitorCheck
 } from 'lucide-react';
+
+const ASPECT_PRESETS = [
+  { label: 'YouTube 16:9', ratio: '16:9', w: 1920, h: 1080 },
+  { label: 'Reels / Shorts 9:16', ratio: '9:16', w: 1080, h: 1920 },
+  { label: 'Post 1:1', ratio: '1:1', w: 1080, h: 1080 },
+  { label: 'Insta 4:5', ratio: '4:5', w: 1080, h: 1350 },
+];
 
 export default function TopBar() {
   const { 
     project, undo, redo, setShowNewProjectModal, setShowExportModal,
-    setShowImportModal, setShowSettingsModal,
+    setShowImportModal, setShowSettingsModal, setProject,
     setShowShortcutsModal, showGrid, setShowGrid,
     showGuides, setShowGuides, showSafeZones, setShowSafeZones,
-    snapToObjects, setSnapToObjects, setZoom
+    snapToObjects, setSnapToObjects, setZoom, setShowCaptionsModal
   } = useStore();
+  const { captions } = useCaptionStore();
 
   const [showFileMenu, setShowFileMenu] = useState(false);
   const [showViewMenu, setShowViewMenu] = useState(false);
+  const [showResizeMenu, setShowResizeMenu] = useState(false);
+
+  const applyAspect = (preset: typeof ASPECT_PRESETS[number]) => {
+    if (project) {
+      setProject({ ...project, width: preset.w, height: preset.h, aspectRatio: preset.ratio, updatedAt: new Date().toISOString() });
+    }
+    setShowResizeMenu(false);
+  };
 
   const menuItems = [
     { label: 'New Project', icon: <Plus size={14} />, action: () => setShowNewProjectModal(true), shortcut: '' },
@@ -125,8 +142,51 @@ export default function TopBar() {
 
       {/* Right: Actions */}
       <div className="flex items-center gap-1">
+        {/* Magic Resize — aspect ratio switcher */}
+        <div className="relative hidden md:block mr-1">
+          <button
+            className="flex items-center gap-1.5 px-2 py-1 rounded text-xs text-gray-400 hover:text-white hover:bg-[var(--bg-hover)] transition-all"
+            onClick={() => { setShowResizeMenu(!showResizeMenu); setShowFileMenu(false); setShowViewMenu(false); }}
+            title="Magic Resize — ek click me format badlo"
+          >
+            <Crop size={13} />
+            <span className="hidden lg:inline">{project?.aspectRatio || '16:9'}</span>
+            <ChevronDown size={11} />
+          </button>
+          {showResizeMenu && (
+            <>
+              <div className="fixed inset-0 z-[999]" onClick={() => setShowResizeMenu(false)} />
+              <div className="context-menu top-full left-0 mt-1 animate-fade-in z-[1000]" style={{ position: 'absolute' }}>
+                <div className="px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-500">✨ Magic Resize</div>
+                {ASPECT_PRESETS.map(p => (
+                  <button key={p.ratio} className="context-menu-item w-full" onClick={() => applyAspect(p)}>
+                    <span className="flex-1 text-left">{p.label}</span>
+                    <span className="text-xs text-gray-600">{p.w}×{p.h}</span>
+                    {project?.aspectRatio === p.ratio && <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* AI Captions */}
+        <button
+          className={`tool-btn w-8 h-8 ${captions.length > 0 ? 'active' : ''}`}
+          onClick={() => setShowCaptionsModal(true)}
+          title="AI Auto-Captions"
+        >
+          <Captions size={15} />
+          {captions.length > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] px-0.5 rounded-full text-[8px] font-bold flex items-center justify-center"
+              style={{ background: 'var(--accent)', color: '#04110e' }}>
+              {captions.length}
+            </span>
+          )}
+        </button>
+
         {/* Resolution indicator */}
-        <div className="hidden lg:flex items-center gap-1 px-2 py-1 rounded text-xs text-gray-500 mr-2"
+        <div className="hidden lg:flex items-center gap-1 px-2 py-1 rounded text-xs text-gray-500 mx-1"
           style={{ background: 'var(--bg-tertiary)' }}>
           <Monitor size={12} />
           <span>{project?.width || 1920}×{project?.height || 1080}</span>

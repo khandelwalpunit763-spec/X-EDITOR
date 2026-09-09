@@ -15,11 +15,12 @@ import WatermarkModal from './components/modals/WatermarkModal';
 import AIModal from './components/modals/AIModal';
 import ThumbnailModal from './components/modals/ThumbnailModal';
 import ShareUploadModal from './components/modals/ShareUploadModal';
+import CaptionsModal from './components/modals/CaptionsModal';
 
 function App() {
   const { view, showNewProjectModal, showExportModal, showImportModal, 
     showSettingsModal, showHelpModal, showShortcutsModal, showWatermarkModal,
-    showAIModal, showThumbnailModal, showShareModal,
+    showAIModal, showThumbnailModal, showShareModal, showCaptionsModal,
     undo, redo, saveProject, setActiveTool, setShowShareModal, project } = useStore();
 
   const [showRestorePrompt, setShowRestorePrompt] = useState(false);
@@ -122,6 +123,7 @@ function App() {
       {showAIModal && <AIModal />}
       {showThumbnailModal && <ThumbnailModal />}
       {showShareModal && <ShareUploadModal projectName={project?.name || 'Untitled'} onClose={() => setShowShareModal(false)} />}
+      {showCaptionsModal && <CaptionsModal />}
 
       {showRestorePrompt && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl"
